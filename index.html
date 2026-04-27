@@ -154,6 +154,32 @@
     .goals-footer { display:flex; align-items:center; gap:12px; padding-top:16px; border-top:1px solid var(--brd); margin-top:8px; }
     .saved-msg { font-size:11px; color:var(--green); display:none; }
 
+    /* GOAL TRACKER */
+    .gt-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
+    .gt-card { background:var(--sur); border:1px solid var(--brd); border-radius:var(--r); padding:20px; position:relative; overflow:hidden; transition:border-color .2s; }
+    .gt-card:hover { border-color:rgba(0,136,255,.3); }
+    .gt-card-accent { position:absolute; top:0; left:0; right:0; height:3px; }
+    .gt-period { display:inline-block; font-size:10px; font-weight:500; padding:2px 9px; border-radius:10px; background:var(--bdim); color:var(--blue); margin-bottom:10px; text-transform:uppercase; letter-spacing:.8px; }
+    .gt-name { font-size:15px; font-weight:500; margin-bottom:6px; line-height:1.3; }
+    .gt-metric { font-size:11px; color:var(--t2); margin-bottom:14px; }
+    .gt-nums { display:flex; justify-content:space-between; margin-bottom:8px; }
+    .gt-num { text-align:center; }
+    .gt-num-val { font-size:20px; font-weight:700; line-height:1; }
+    .gt-num-lbl { font-size:10px; color:var(--t2); margin-top:3px; text-transform:uppercase; letter-spacing:.7px; }
+    .gt-bar-wrap { height:6px; background:var(--sur3); border-radius:3px; overflow:hidden; margin-bottom:10px; }
+    .gt-bar { height:100%; border-radius:3px; transition:width .7s cubic-bezier(.4,0,.2,1); }
+    .gt-status { display:flex; align-items:center; justify-content:space-between; }
+    .gt-badge { font-size:10px; font-weight:500; padding:3px 10px; border-radius:10px; }
+    .gt-on   { background:rgba(107,238,169,.12); color:var(--green); }
+    .gt-risk { background:rgba(255,194,122,.12); color:var(--orange); }
+    .gt-off  { background:rgba(255,77,107,.12);  color:var(--red); }
+    .gt-na   { background:rgba(138,155,192,.1);  color:var(--t2); }
+    .gt-pct  { font-size:13px; font-weight:700; }
+    .gt-section-hdr { font-size:10px; font-weight:500; color:var(--t2); text-transform:uppercase; letter-spacing:1.1px; margin:24px 0 12px; padding-bottom:8px; border-bottom:1px solid var(--brd); }
+    .gt-summary-stat { text-align:center; }
+    .gt-summary-val { font-size:22px; font-weight:700; }
+    .gt-summary-lbl { font-size:10px; color:var(--t2); text-transform:uppercase; letter-spacing:.8px; }
+
     /* EMPTY */
     .empty { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:140px; color:var(--t2); font-size:13px; gap:5px; }
     .empty strong { color:var(--text); font-size:14px; }
@@ -200,10 +226,11 @@
   </div>
 </div>
 
-<!-- TABS — Dashboard + dynamic Lead Gen tabs + Goals -->
+<!-- TABS — Dashboard + dynamic Lead Gen tabs + Goal Tracker + Goals -->
 <div class="nav-tabs" id="navTabs">
   <div class="nav-tab active" onclick="switchTab('dashboard',this)">Dashboard</div>
   <!-- lead gen tabs injected by JS -->
+  <div class="nav-tab" onclick="switchTab('goaltracker',this)">Goal Tracker</div>
   <div class="nav-tab" onclick="switchTab('goals',this)">Goals</div>
 </div>
 
@@ -272,6 +299,20 @@
 
   <!-- ══ LEAD GEN TABS (injected by JS) ══ -->
 
+  <!-- ══ GOAL TRACKER TAB ══ -->
+  <div id="tab-goaltracker" class="tab-panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+      <div>
+        <h2 style="font-size:18px;font-weight:500">Goal Tracker</h2>
+        <p style="font-size:12px;color:var(--t2);margin-top:4px">Goals pulled from your Excel "Goals" sheet. Sync via Office Script to update.</p>
+      </div>
+      <div id="gt-summary" style="display:flex;gap:16px;align-items:center"></div>
+    </div>
+    <div id="gt-content">
+      <div class="empty"><strong>No goals synced yet</strong>Add a "Goals" sheet to your Excel file, then run the Office Script.</div>
+    </div>
+  </div>
+
   <!-- ══ GOALS TAB ══ -->
   <div id="tab-goals" class="tab-panel">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
@@ -291,9 +332,15 @@
 
 <script>
 // ════════════════════════════════════════════════
-// ⚙️  CONFIG  — change LEADGEN_COL to match your sheet
-//    Common options: 'Lead Source', 'BDR Channel', 'Contact Source'
-const LEADGEN_COL = 'Lead Source';
+// ⚙️  CONFIG
+const LEADGEN_COL = 'Lead Source'; // column that holds Inbound/Outbound/Sales Rep
+
+// Goals sheet column names — update to match your Excel "Goals" sheet headers
+const GOAL_COL_NAME    = 'Goal';       // the goal description / name
+const GOAL_COL_METRIC  = 'Metric';     // what to measure (e.g. "Meetings Scheduled")
+const GOAL_COL_TARGET  = 'Target';     // numeric target
+const GOAL_COL_PERIOD  = 'Quarter';    // period: Q1 / Q2 / Q3 / Q4 / Annual
+const GOAL_COL_SOURCE  = 'Lead Source';// (optional) filter by lead source
 // ════════════════════════════════════════════════
 
 const DATA_URL = 'data.json';
@@ -321,7 +368,7 @@ const QUARTERS = ['Q1','Q2','Q3','Q4'];
 const MONTHS   = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 // ─── STATE ───────────────────────────────────────
-let allRows=[], filteredRows=[], goals=[], _ch={}, leadGenTypes=[], activeLG=null;
+let allRows=[], filteredRows=[], goals=[], goalRows=[], _ch={}, leadGenTypes=[], activeLG=null;
 
 // ─── BOOT ────────────────────────────────────────
 document.addEventListener('DOMContentLoaded',()=>{ loadGoals(); renderGoalsTab(); fetchData(); });
@@ -332,6 +379,7 @@ async function fetchData(){
     if(!r.ok) throw new Error();
     const j=await r.json();
     allRows=(j.rows||[]).filter(r=>r&&Object.values(r).some(v=>v!==''&&v!=null));
+    goalRows=(j.goalRows||[]).filter(r=>r&&Object.values(r).some(v=>v!==''&&v!=null));
     const el=document.getElementById('lastUpdated');
     if(j.lastUpdated){
       el.textContent='Synced '+new Date(j.lastUpdated).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
@@ -523,7 +571,7 @@ function renderLeadGenTab(safeId,lg){
 }
 
 // ─── RENDER ALL ───────────────────────────────────
-function renderAll(){ renderKPIs();renderMonthly();renderLeadType();renderBDR();renderFunnel();renderPipeQ();renderVert();renderStage();renderInsights();renderGoalsTab(); if(activeLG)renderLeadGenTab(activeLG.safeId,activeLG.lg); }
+function renderAll(){ renderKPIs();renderMonthly();renderLeadType();renderBDR();renderFunnel();renderPipeQ();renderVert();renderStage();renderInsights();renderGoalTracker();renderGoalsTab(); if(activeLG)renderLeadGenTab(activeLG.safeId,activeLG.lg); }
 
 // ─── KPIs ────────────────────────────────────────
 function renderKPIs(){
@@ -622,6 +670,130 @@ function renderInsights(){
   if(m.avg_cycle>0){if(m.avg_cycle>90)ins.push({t:'wn',txt:`<strong>Avg sales cycle of ${m.avg_cycle} days</strong> — over 3 months. Identify the longest pipeline stage and add a champion-building step to accelerate decisions.`});else if(m.avg_cycle<=45)ins.push({t:'up',txt:`<strong>Lean ${m.avg_cycle}-day sales cycle.</strong> Protect it by locking in timelines early in discovery calls.`});else ins.push({t:'in',txt:`<strong>Avg sales cycle: ${m.avg_cycle} days.</strong> Flag deals stalled over ${Math.round(m.avg_cycle*1.5)} days — they need intervention.`});}
   const IC={up:'↑',dn:'↓',wn:'!',id:'→',in:'·'};const DC={up:'d-up',dn:'d-dn',wn:'d-wn',id:'d-id',in:'d-in'};
   el.innerHTML=ins.slice(0,5).map(i=>`<div class="insight"><div class="i-dot ${DC[i.t]}">${IC[i.t]}</div><div class="i-txt">${i.txt}</div></div>`).join('');
+}
+
+// ─── GOAL TRACKER ────────────────────────────────
+// Maps a metric label from the Goals sheet to a computed metric key or formula
+function resolveMetric(label){
+  const l=String(label||'').toLowerCase().trim();
+  if(!l) return null;
+  if(l.includes('scheduled'))                          return {key:'scheduled',fmt:'n'};
+  if(l.includes('happened')||l.includes('show rate')) return {key:'happened', fmt:'n'};
+  if(l.includes('accepted'))                           return {key:'accepted', fmt:'n'};
+  if(l.includes('pipeline value')||l.includes('pipe val')) return {key:'pipe_val',fmt:'$'};
+  if(l.includes('pipeline')||l.includes('entered'))   return {key:'pipe_cnt',fmt:'n'};
+  if(l.includes('revenue')||l.includes('closed val')) return {key:'close_val',fmt:'$'};
+  if(l.includes('closed')||l.includes('deals closed'))return {key:'close_cnt',fmt:'n'};
+  if(l.includes('reschedule'))                         return {key:'reschedules',fmt:'n'};
+  if(l.includes('cycle'))                              return {key:'avg_cycle', fmt:'n'};
+  return null;
+}
+
+function renderGoalTracker(){
+  const el=document.getElementById('gt-content');
+  const sumEl=document.getElementById('gt-summary');
+  if(!el) return;
+
+  if(!goalRows.length){
+    el.innerHTML=`<div class="empty"><strong>No goals synced yet</strong>Add a "Goals" sheet to your Excel file, then run the Office Script.</div>`;
+    sumEl.innerHTML='';
+    return;
+  }
+
+  // Group goals by period
+  const byPeriod={};
+  goalRows.forEach(g=>{
+    const period=String(g[GOAL_COL_PERIOD]||'Annual').trim();
+    if(!byPeriod[period]) byPeriod[period]=[];
+    byPeriod[period].push(g);
+  });
+
+  // Compute actuals and build cards
+  const periodOrder=['Q1','Q2','Q3','Q4','Annual'];
+  const sortedPeriods=[
+    ...periodOrder.filter(p=>byPeriod[p]),
+    ...Object.keys(byPeriod).filter(p=>!periodOrder.includes(p))
+  ];
+
+  let onTrack=0, atRisk=0, behind=0, noTarget=0;
+  let html='';
+
+  sortedPeriods.forEach(period=>{
+    html+=`<div class="gt-section-hdr">${period}</div><div class="gt-grid">`;
+    byPeriod[period].forEach(g=>{
+      const name    = String(g[GOAL_COL_NAME]   ||'').trim() || 'Unnamed Goal';
+      const metricLbl=String(g[GOAL_COL_METRIC] ||'').trim();
+      const target  = toNum(g[GOAL_COL_TARGET]);
+      const lgFilter= String(g[GOAL_COL_SOURCE] ||'').trim();
+
+      // Compute actual from main data, filtered by period and optional lead source
+      let rows=allRows;
+      const qMatch=period.match(/^Q(\d)$/i);
+      if(qMatch){
+        const qn=qMatch[1];
+        rows=rows.filter(r=>{
+          const qs=['Schedule (Q)','Happened (Q)','Pipe (Q)','Close (Q)'];
+          return qs.some(c=>String(r[c]||'').includes(qn));
+        });
+      }
+      if(lgFilter) rows=rows.filter(r=>String(r[LEADGEN_COL]||'').trim().toLowerCase()===lgFilter.toLowerCase());
+
+      const m=metrics(rows);
+      const resolved=resolveMetric(metricLbl);
+      const actual=resolved?m[resolved.key]??0:null;
+      const fmt=resolved?.fmt||'n';
+      const fmtFn=fmt==='$'?fmtD:fmtN;
+
+      // Attainment
+      let pr=0, statusCls='gt-na', statusTxt='No Target', accentColor=C.t2;
+      if(target&&actual!==null){
+        pr=Math.min(100,pct(actual,target));
+        if(pr>=100){statusCls='gt-on'; statusTxt='On Track';  accentColor=C.green;}
+        else if(pr>=70){statusCls='gt-risk';statusTxt='At Risk';  accentColor=C.orange;}
+        else{statusCls='gt-off'; statusTxt='Behind';    accentColor=C.red;}
+        if(statusCls==='gt-on')onTrack++;
+        else if(statusCls==='gt-risk')atRisk++;
+        else behind++;
+      } else { noTarget++; }
+
+      html+=`<div class="gt-card">
+        <div class="gt-card-accent" style="background:${accentColor}"></div>
+        <div class="gt-period">${period}${lgFilter?' · '+lgFilter:''}</div>
+        <div class="gt-name">${name}</div>
+        <div class="gt-metric">${metricLbl||'—'}</div>
+        <div class="gt-nums">
+          <div class="gt-num">
+            <div class="gt-num-val" style="color:${accentColor}">${actual!==null?fmtFn(actual):'—'}</div>
+            <div class="gt-num-lbl">Actual</div>
+          </div>
+          <div class="gt-num">
+            <div class="gt-num-val">${target?fmtFn(target):'—'}</div>
+            <div class="gt-num-lbl">Target</div>
+          </div>
+          <div class="gt-num">
+            <div class="gt-num-val" style="color:${accentColor}">${target&&actual!==null?pr+'%':'—'}</div>
+            <div class="gt-num-lbl">Attained</div>
+          </div>
+        </div>
+        ${target&&actual!==null?`<div class="gt-bar-wrap"><div class="gt-bar" style="width:${pr}%;background:${accentColor}"></div></div>`:'<div style="height:14px"></div>'}
+        <div class="gt-status">
+          <span class="gt-badge ${statusCls}">${statusTxt}</span>
+          ${target&&actual!==null?`<span class="gt-pct" style="color:${accentColor}">${fmtFn(actual)} / ${fmtFn(target)}</span>`:''}
+        </div>
+      </div>`;
+    });
+    html+='</div>';
+  });
+
+  el.innerHTML=html;
+
+  // Summary bar
+  const total=onTrack+atRisk+behind+noTarget;
+  sumEl.innerHTML=`
+    <div class="gt-summary-stat"><div class="gt-summary-val" style="color:var(--green)">${onTrack}</div><div class="gt-summary-lbl">On Track</div></div>
+    <div class="gt-summary-stat"><div class="gt-summary-val" style="color:var(--orange)">${atRisk}</div><div class="gt-summary-lbl">At Risk</div></div>
+    <div class="gt-summary-stat"><div class="gt-summary-val" style="color:var(--red)">${behind}</div><div class="gt-summary-lbl">Behind</div></div>
+    <div class="gt-summary-stat"><div class="gt-summary-val" style="color:var(--t2)">${total}</div><div class="gt-summary-lbl">Total Goals</div></div>`;
 }
 
 // ─── GOALS ───────────────────────────────────────
