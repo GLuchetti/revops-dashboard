@@ -880,7 +880,7 @@ function renderGoalTracker(){
         ${target&&actual!==null?`<div class="gt-bar-wrap"><div class="gt-bar" style="width:${pr}%;background:${accentColor}"></div></div>`:'<div style="height:14px"></div>'}
         <div class="gt-status">
           <span class="gt-badge ${statusCls}">${statusTxt}</span>
-          ${target&&actual!==null?`<span class="gt-pct" style="color:${accentColor}">${fmtFn(actual)} / ${fmtFn(target)}</span>`:''}
+          ${target&&actual!==null?`<span class="gt-pct" style="color:${accentColor}">${fmt==='$'?fmtD(actual):fmt==='%'?(Math.round(actual*1000)/10)+'%':fmtN(actual)} / ${fmt==='$'?fmtD(target):fmt==='%'?(Math.round(target*1000)/10)+'%':fmtN(target)}</span>`:''}
         </div>
       </div>`;
     });
@@ -905,11 +905,20 @@ function persistGoals(){ localStorage.setItem('sz-goals-v4',JSON.stringify(goals
 // ── Helper column utilities ──
 function getColumns(){ return allRows.length?Object.keys(allRows[0]):[]; }
 function getDateColumns(){
+  // Returns columns that look like dates — used to float them to top of date pickers
   return getColumns().filter(col=>{
-    const samples=allRows.slice(0,15).map(r=>r[col]).filter(v=>v!==''&&v!=null);
+    const samples=allRows.slice(0,20).map(r=>r[col]).filter(v=>v!==''&&v!=null);
     if(!samples.length) return false;
-    const datelike=samples.filter(v=>{ const s=String(v); return s.match(/\d{4}/)&&(s.match(/[\/\-]/)||s.match(/[A-Za-z]/)); }).length;
-    return datelike/samples.length>0.3;
+    const datelike=samples.filter(v=>{
+      const s=String(v).trim();
+      // ISO / slash / dash formats with year
+      if(s.match(/\d{4}/)&&(s.match(/[\/\-]/)||s.match(/[A-Za-z]/))) return true;
+      // Excel serial numbers: integers roughly in year 2000-2040 range (36526–51136)
+      const n=parseFloat(s);
+      if(!isNaN(n)&&Number.isInteger(n)&&n>36526&&n<60000) return true;
+      return false;
+    }).length;
+    return datelike/samples.length>0.25;
   });
 }
 function getNumericColumns(){
@@ -923,10 +932,19 @@ function getUniqueVals(col,limit=25){
   return [...new Set(allRows.map(r=>String(r[col]||'').trim()).filter(Boolean))].sort().slice(0,limit);
 }
 function parseFlexDate(v){
-  if(!v) return null;
+  if(!v&&v!==0) return null;
+  const raw=v;
   const s=String(v).trim();
+  // Excel serial number (integer 35000–60000 covers years 1995–2064)
+  const n=parseFloat(s);
+  if(!isNaN(n)&&Number.isInteger(n)&&n>35000&&n<60000){
+    // Excel epoch: Dec 30, 1899 = day 0. Offset to Unix epoch (Jan 1, 1970) = 25569 days.
+    return new Date(Math.round((n - 25569) * 86400000));
+  }
+  // ISO / standard string parse
   const d=new Date(s);
   if(!isNaN(d.getTime())&&s.length>4) return d;
+  // "Jan 2026" month+year
   const my=s.match(/^([A-Za-z]+)\s+(\d{4})$/);
   if(my){
     const MONS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -1139,9 +1157,14 @@ function wizStepHTML(step){
   };
 
   const valOpts=(col,selected)=>{
-    const vals=col&&col!=='none'?getUniqueVals(col):[];
-    let html=`<option value="__any__"${!selected||selected==='__any__'?' selected':''}>Any non-empty value</option>`;
-    html+=vals.map(v=>`<option value="${v}"${v===selected?' selected':''}>${v}</option>`).join('');
+    const isDateCol=dateCols.includes(col);
+    const anyLbl=isDateCol?'Has a date (any non-empty)':'Any non-empty value';
+    let html=`<option value="__any__"${!selected||selected==='__any__'?' selected':''}>${anyLbl}</option>`;
+    // Don't list individual values for date columns — they'd be serial numbers
+    if(!isDateCol){
+      const vals=col&&col!=='none'?getUniqueVals(col):[];
+      html+=vals.map(v=>`<option value="${v}"${v===selected?' selected':''}>${v}</option>`).join('');
+    }
     return html;
   };
 
@@ -1203,7 +1226,8 @@ function wizStepHTML(step){
       <div class="wiz-hint">If you pick a date column, you'll set a date range on the next step.</div>
       <select class="wiz-sel" id="wiz-countDateCol">
         <option value="none"${d.countDateCol==='none'||!d.countDateCol?' selected':''}>No date filter</option>
-        ${dateCols.map(c=>`<option value="${c}"${c===d.countDateCol?' selected':''}>${c}</option>`).join('')}
+        ${dateCols.length?`<optgroup label="Detected date columns">${dateCols.map(c=>`<option value="${c}"${c===d.countDateCol?' selected':''}>${c}</option>`).join('')}</optgroup>`:''}
+        <optgroup label="All columns">${cols.filter(c=>!dateCols.includes(c)).map(c=>`<option value="${c}"${c===d.countDateCol?' selected':''}>${c}</option>`).join('')}</optgroup>
       </select>`;
 
     case 'countDateRange': return `
@@ -1232,7 +1256,8 @@ function wizStepHTML(step){
       <div class="wiz-q">Date filter for numerator? <span style="color:var(--t2);font-size:13px">(optional)</span></div>
       <select class="wiz-sel" id="wiz-numDateCol">
         <option value="none"${d.numDateCol==='none'||!d.numDateCol?' selected':''}>No date filter</option>
-        ${dateCols.map(c=>`<option value="${c}"${c===d.numDateCol?' selected':''}>${c}</option>`).join('')}
+        ${dateCols.length?`<optgroup label="Detected date columns">${dateCols.map(c=>`<option value="${c}"${c===d.numDateCol?' selected':''}>${c}</option>`).join('')}</optgroup>`:''}
+        <optgroup label="All columns">${cols.filter(c=>!dateCols.includes(c)).map(c=>`<option value="${c}"${c===d.numDateCol?' selected':''}>${c}</option>`).join('')}</optgroup>
       </select>`;
 
     case 'numDateRange': return `
@@ -1261,7 +1286,8 @@ function wizStepHTML(step){
       <div class="wiz-q">Date filter for denominator? <span style="color:var(--t2);font-size:13px">(optional)</span></div>
       <select class="wiz-sel" id="wiz-denDateCol">
         <option value="none"${d.denDateCol==='none'||!d.denDateCol?' selected':''}>No date filter</option>
-        ${dateCols.map(c=>`<option value="${c}"${c===d.denDateCol?' selected':''}>${c}</option>`).join('')}
+        ${dateCols.length?`<optgroup label="Detected date columns">${dateCols.map(c=>`<option value="${c}"${c===d.denDateCol?' selected':''}>${c}</option>`).join('')}</optgroup>`:''}
+        <optgroup label="All columns">${cols.filter(c=>!dateCols.includes(c)).map(c=>`<option value="${c}"${c===d.denDateCol?' selected':''}>${c}</option>`).join('')}</optgroup>
       </select>`;
 
     case 'denDateRange': return `
@@ -1298,7 +1324,8 @@ function wizStepHTML(step){
       <div class="wiz-q">Filter by a date column? <span style="color:var(--t2);font-size:13px">(optional)</span></div>
       <select class="wiz-sel" id="wiz-sumDateCol">
         <option value="none"${d.sumDateCol==='none'||!d.sumDateCol?' selected':''}>No date filter</option>
-        ${dateCols.map(c=>`<option value="${c}"${c===d.sumDateCol?' selected':''}>${c}</option>`).join('')}
+        ${dateCols.length?`<optgroup label="Detected date columns">${dateCols.map(c=>`<option value="${c}"${c===d.sumDateCol?' selected':''}>${c}</option>`).join('')}</optgroup>`:''}
+        <optgroup label="All columns">${cols.filter(c=>!dateCols.includes(c)).map(c=>`<option value="${c}"${c===d.sumDateCol?' selected':''}>${c}</option>`).join('')}</optgroup>
       </select>`;
 
     case 'sumDateRange': return `
