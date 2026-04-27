@@ -301,12 +301,21 @@
 
   <!-- ══ GOAL TRACKER TAB ══ -->
   <div id="tab-goaltracker" class="tab-panel">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px">
       <div>
         <h2 style="font-size:18px;font-weight:500">Goal Tracker</h2>
         <p style="font-size:12px;color:var(--t2);margin-top:4px">Goals pulled from your Excel "Goals" sheet. Sync via Office Script to update.</p>
       </div>
       <div id="gt-summary" style="display:flex;gap:16px;align-items:center"></div>
+    </div>
+    <!-- Date range bar -->
+    <div style="display:flex;align-items:center;gap:12px;background:var(--sur);border:1px solid var(--brd);border-radius:8px;padding:11px 16px;margin-bottom:20px;flex-wrap:wrap">
+      <span style="font-size:10px;font-weight:500;color:var(--t2);text-transform:uppercase;letter-spacing:.9px;white-space:nowrap">Date Range</span>
+      <input type="date" id="gt-start" onchange="renderGoalTracker()" style="background:var(--sur2);border:1px solid var(--brd);color:var(--t3);padding:5px 10px;border-radius:6px;font-size:12px;font-family:Roboto,sans-serif;color-scheme:dark;outline:none">
+      <span style="color:var(--t2);font-size:13px">→</span>
+      <input type="date" id="gt-end" onchange="renderGoalTracker()" style="background:var(--sur2);border:1px solid var(--brd);color:var(--t3);padding:5px 10px;border-radius:6px;font-size:12px;font-family:Roboto,sans-serif;color-scheme:dark;outline:none">
+      <button class="btn btn-o" style="font-size:11px;padding:5px 12px" onclick="document.getElementById('gt-start').value='';document.getElementById('gt-end').value='';renderGoalTracker()">Clear</button>
+      <span id="gt-date-note" style="font-size:11px;color:var(--t2);margin-left:4px"></span>
     </div>
     <div id="gt-content">
       <div class="empty"><strong>No goals synced yet</strong>Add a "Goals" sheet to your Excel file, then run the Office Script.</div>
@@ -696,6 +705,30 @@ function resolveMetric(label){
   return null;
 }
 
+// Converts a data row to a JS Date using whatever date columns exist
+function rowToDate(row){
+  // Try explicit date columns first
+  const candidates=['Schedule Date','Pipe Date','Close Date','Date','Meeting Date'];
+  for(const c of candidates){
+    if(row[c]){ const d=new Date(row[c]); if(!isNaN(d.getTime())) return d; }
+  }
+  // Reconstruct from Schedule (M) + Schedule (Y)
+  const m=String(row['Schedule (M)']||'').trim();
+  const y=String(row['Schedule (Y)']||'').trim();
+  if(m&&y){
+    const mi=MONTHS.findIndex(mo=>m.toLowerCase().startsWith(mo.toLowerCase()));
+    if(mi>=0&&parseInt(y)>2000) return new Date(parseInt(y),mi,15);
+  }
+  return null;
+}
+
+function applyDateRange(rows, start, end){
+  if(!start&&!end) return rows;
+  const s=start?new Date(start):null;
+  const e=end?new Date(end+'T23:59:59'):null;
+  return rows.filter(r=>{ const d=rowToDate(r); if(!d) return true; if(s&&d<s) return false; if(e&&d>e) return false; return true; });
+}
+
 function renderGoalTracker(){
   const el=document.getElementById('gt-content');
   const sumEl=document.getElementById('gt-summary');
@@ -733,7 +766,22 @@ function renderGoalTracker(){
       const target  = toNum(g[GOAL_COL_TARGET]);
       const lgFilter= String(g[GOAL_COL_SOURCE] ||'').trim();
 
-      // Filter rows by quarter, year, and lead source
+      // Read global date range pickers
+      const globalStart=document.getElementById('gt-start')?.value||'';
+      const globalEnd  =document.getElementById('gt-end')?.value||'';
+      // Per-goal dates from Excel (Start Date / End Date columns) override global pickers
+      const goalStart=String(g['Start Date']||'').trim();
+      const goalEnd  =String(g['End Date']  ||'').trim();
+      const useStart=goalStart||globalStart;
+      const useEnd  =goalEnd  ||globalEnd;
+
+      // Update note label
+      const noteEl=document.getElementById('gt-date-note');
+      if(noteEl&&(globalStart||globalEnd)){
+        noteEl.textContent=(globalStart?'From '+globalStart:'')+' '+(globalEnd?'to '+globalEnd:'');
+      } else if(noteEl){ noteEl.textContent=''; }
+
+      // Filter rows by quarter, year, lead source, and date range
       let rows=allRows;
       const qMatch=period.match(/^Q(\d)$/i);
       if(qMatch){
@@ -747,6 +795,7 @@ function renderGoalTracker(){
       if(goalYear) rows=rows.filter(r=>String(r['Schedule (Y)']||'').trim()===goalYear);
       const lgAll=!lgFilter||lgFilter.toLowerCase()==='all';
       if(!lgAll) rows=rows.filter(r=>String(r[LEADGEN_COL]||'').trim().toLowerCase()===lgFilter.toLowerCase());
+      rows=applyDateRange(rows,useStart,useEnd);
 
       const m=metrics(rows);
       const resolved=resolveMetric(metricLbl);
