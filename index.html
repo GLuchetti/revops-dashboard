@@ -879,14 +879,16 @@ function loadGoals(){ try{goals=JSON.parse(localStorage.getItem('sz-revops-goals
 
 function saveGoals(){
   goals=goals.map((g,i)=>({
-    name:     document.getElementById(`gn-${i}`)?.value||g.name,
-    col:      document.getElementById(`gc-${i}`)?.value||g.col,
-    rawCol:   (document.getElementById(`gr-${i}`)?.value||'').trim(),
-    matchVal: (document.getElementById(`gm-${i}`)?.value||'').trim(),
-    formula:  (document.getElementById(`gf-${i}`)?.value||'').trim(),
-    fmt:      document.getElementById(`gfmt-${i}`)?.value||g.fmt||'n',
-    target:   toNum(document.getElementById(`gt-${i}`)?.value),
-    quarter:  document.getElementById(`gq-${i}`)?.value||g.quarter,
+    name:      document.getElementById(`gn-${i}`)?.value||g.name,
+    col:       document.getElementById(`gc-${i}`)?.value||g.col,
+    rawCol:    (document.getElementById(`gr-${i}`)?.value||'').trim(),
+    matchVal:  (document.getElementById(`gm-${i}`)?.value||'').trim(),
+    formula:   (document.getElementById(`gf-${i}`)?.value||'').trim(),
+    fmt:       document.getElementById(`gfmt-${i}`)?.value||g.fmt||'n',
+    target:    toNum(document.getElementById(`gt-${i}`)?.value),
+    quarter:   document.getElementById(`gq-${i}`)?.value||g.quarter,
+    startDate: document.getElementById(`gsd-${i}`)?.value||'',
+    endDate:   document.getElementById(`ged-${i}`)?.value||'',
   }));
   localStorage.setItem('sz-revops-goals-v3',JSON.stringify(goals));
   const msg=document.getElementById('savedMsg'); msg.style.display='inline'; setTimeout(()=>msg.style.display='none',2500);
@@ -895,7 +897,7 @@ function saveGoals(){
 
 function addGoalForQuarter(quarter){
   saveGoals();
-  goals.push({name:'New Goal',col:'scheduled',rawCol:'',matchVal:'',formula:'',fmt:'n',target:0,quarter});
+  goals.push({name:'New Goal',col:'scheduled',rawCol:'',matchVal:'',formula:'',fmt:'n',target:0,quarter,startDate:'',endDate:''});
   localStorage.setItem('sz-revops-goals-v3',JSON.stringify(goals));
   renderGoalsTab();
   setTimeout(()=>{
@@ -914,12 +916,11 @@ function evalFormula(expr,m){
   catch{ return 0; }
 }
 
-function actualFor(colKey,quarter,rawCol,matchVal,formula){
+function actualFor(colKey,quarter,rawCol,matchVal,formula,startDate,endDate){
   let rows=allRows;
   if(quarter&&quarter.startsWith('q')){const qn=quarter.replace('q','');rows=allRows.filter(r=>{const qs=['Schedule (Q)','Happened (Q)','Pipe (Q)','Close (Q)'];return qs.some(c=>String(r[c]||'').includes(qn));});}
-  // Formula mode: evaluate math expression using metric keys
+  if(startDate||endDate) rows=applyDateRange(rows,startDate,endDate);
   if(formula) return evalFormula(formula,metrics(rows));
-  // Custom column mode: count rows matching the specified value (or any truthy if no matchVal)
   if(rawCol){
     return rows.filter(r=>{
       const v=String(r[rawCol]??'').trim();
@@ -955,7 +956,7 @@ function renderGoalsTab(){
       qGoals.forEach(g=>{
         const i=g.i;
         const fmt=g.fmt||'n';
-        const actual=actualFor(g.col,qk,g.rawCol||'',g.matchVal||'',g.formula||'');
+        const actual=actualFor(g.col,qk,g.rawCol||'',g.matchVal||'',g.formula||'',g.startDate||'',g.endDate||'');
         const target=toNum(g.target);
         const pr=target?Math.min(100,pct(actual,target)):0;
         const clr=pr>=100?'var(--green)':pr>=70?'var(--orange)':'var(--red)';
@@ -980,9 +981,15 @@ function renderGoalsTab(){
             <div class="gf"><label>Expression <span style="color:var(--t2);font-weight:300">(e.g. happened / scheduled * 100)</span></label><input id="gf-${i}" type="text" value="${g.formula||''}" placeholder="happened / scheduled * 100"></div>
             <div style="font-size:10px;color:var(--t2);margin-top:4px">Available: ${METRIC_KEYS}</div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
             <div class="gf"><label>Target Value</label><input id="gt-${i}" type="number" value="${g.target||''}" placeholder="e.g. 75"></div>
             <div class="gf"><label>Format</label><select id="gfmt-${i}" style="width:100%;background:var(--sur2);border:1px solid var(--brd);color:var(--t3);padding:7px 8px;border-radius:6px;font-size:12px;font-family:Roboto,sans-serif">${fmtSel(fmt)}</select></div>
+          </div>
+          <div style="border-top:1px solid var(--brd);margin:0 0 8px"></div>
+          <div style="font-size:10px;font-weight:500;color:var(--t2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">Date Range <span style="color:var(--t2);font-weight:300;text-transform:none;letter-spacing:0">(optional — filters which rows count)</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="gf"><label>Start Date</label><input id="gsd-${i}" type="date" value="${g.startDate||''}" style="width:100%;background:var(--sur2);border:1px solid var(--brd);color:var(--t3);padding:7px 8px;border-radius:6px;font-size:12px;font-family:Roboto,sans-serif;color-scheme:dark;outline:none"></div>
+            <div class="gf"><label>End Date</label><input id="ged-${i}" type="date" value="${g.endDate||''}" style="width:100%;background:var(--sur2);border:1px solid var(--brd);color:var(--t3);padding:7px 8px;border-radius:6px;font-size:12px;font-family:Roboto,sans-serif;color-scheme:dark;outline:none"></div>
           </div>
           ${target?`<div class="goal-att">
             <div class="g-att-row"><span class="g-att-lbl">Actual</span><span class="g-att-val">${fmtFn(fmt,actual)}</span></div>
