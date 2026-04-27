@@ -11,18 +11,21 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:       #0D0638;
-      --surface:  #1A0A67;
-      --surface2: #22107A;
-      --border:   #30189A;
+      --bg:       #07091A;
+      --surface:  #0E1330;
+      --surface2: #151C3D;
+      --surface3: #1C2450;
+      --border:   #252E5A;
       --blue:     #0088FF;
+      --blue-dim: rgba(0,136,255,0.12);
       --cyan:     #00D5E2;
       --green:    #6BEEA9;
       --orange:   #FFC27A;
       --red:      #FF4D6B;
       --purple:   #702FFF;
       --text:     #FFFFFF;
-      --text2:    #DCDFED;
+      --text2:    #8A9BC0;
+      --text3:    #C8D3EC;
       --radius:   10px;
     }
 
@@ -35,36 +38,58 @@
       font-size: 14px;
     }
 
-    /* ── HEADER ── */
+    /* ── HEADER — matches sitezeus.com nav style ── */
     .header {
-      background: var(--surface);
+      background: rgba(7,9,26,0.95);
       border-bottom: 1px solid var(--border);
-      padding: 14px 32px;
+      padding: 0 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      height: 60px;
       position: sticky;
       top: 0;
       z-index: 100;
+      backdrop-filter: blur(12px);
     }
-    .header-left { display: flex; align-items: center; gap: 20px; }
-    .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
-    .logo span { color: var(--blue); }
-    .badge {
+    .header-left { display: flex; align-items: center; gap: 24px; }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .logo-mark {
+      width: 28px; height: 28px;
+      background: var(--blue);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: #fff;
+    }
+    .logo-text { color: var(--text); }
+    .logo-sub  { color: var(--text2); font-weight: 300; font-size: 15px; margin-left: 2px; }
+
+    .sync-badge {
       font-size: 11px;
       color: var(--text2);
       background: var(--surface2);
-      padding: 3px 12px;
+      padding: 4px 12px;
       border-radius: 20px;
       border: 1px solid var(--border);
+      white-space: nowrap;
     }
-    .header-right { display: flex; align-items: center; gap: 10px; }
+    .sync-badge.live { color: var(--green); border-color: rgba(107,238,169,0.3); }
+
+    .header-right { display: flex; align-items: center; gap: 8px; }
 
     /* ── FILTERS ── */
     select {
       background: var(--surface2);
       border: 1px solid var(--border);
-      color: var(--text);
+      color: var(--text3);
       padding: 6px 10px;
       border-radius: 6px;
       font-size: 12px;
@@ -72,31 +97,32 @@
       font-weight: 300;
       cursor: pointer;
       outline: none;
+      transition: border-color 0.15s;
     }
-    select:focus { border-color: var(--blue); }
+    select:focus, select:hover { border-color: var(--blue); color: var(--text); }
 
     /* ── TABS ── */
     .nav-tabs {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 0 32px;
+      padding: 0 40px;
       display: flex;
-      gap: 0;
     }
     .nav-tab {
-      padding: 11px 22px;
+      padding: 12px 20px;
       cursor: pointer;
       color: var(--text2);
       border-bottom: 2px solid transparent;
       font-size: 13px;
       font-weight: 400;
       transition: all 0.15s;
+      white-space: nowrap;
     }
     .nav-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
-    .nav-tab:hover:not(.active) { color: var(--text); }
+    .nav-tab:hover:not(.active) { color: var(--text3); }
 
     /* ── CONTENT ── */
-    .content { padding: 24px 32px; max-width: 1680px; margin: 0 auto; }
+    .content { padding: 28px 40px 48px; max-width: 1720px; margin: 0 auto; }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
@@ -111,58 +137,53 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 18px 20px;
+      padding: 20px 22px;
       position: relative;
       overflow: hidden;
+      transition: border-color 0.2s;
     }
+    .kpi-card:hover { border-color: rgba(0,136,255,0.4); }
     .kpi-card::after {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 3px;
+      height: 2px;
     }
-    .kpi-card.blue::after   { background: var(--blue); }
-    .kpi-card.cyan::after   { background: var(--cyan); }
-    .kpi-card.green::after  { background: var(--green); }
-    .kpi-card.orange::after { background: var(--orange); }
-    .kpi-card.purple::after { background: var(--purple); }
+    .kpi-card.blue::after   { background: linear-gradient(90deg, var(--blue), #00B8FF); }
+    .kpi-card.cyan::after   { background: linear-gradient(90deg, var(--cyan), #00E8D0); }
+    .kpi-card.green::after  { background: linear-gradient(90deg, var(--green), #00E8A8); }
+    .kpi-card.orange::after { background: linear-gradient(90deg, var(--orange), #FFD89A); }
+    .kpi-card.purple::after { background: linear-gradient(90deg, var(--purple), #A060FF); }
 
     .kpi-label {
       font-size: 10px;
       font-weight: 500;
       color: var(--text2);
       text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
+      letter-spacing: 1.2px;
+      margin-bottom: 12px;
     }
     .kpi-value {
-      font-size: 30px;
+      font-size: 32px;
       font-weight: 700;
       line-height: 1;
       margin-bottom: 10px;
+      letter-spacing: -0.5px;
     }
-    .kpi-sub {
-      font-size: 11px;
-      color: var(--text2);
-      margin-bottom: 8px;
-    }
-    .kpi-progress {
-      height: 3px;
-      background: var(--surface2);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-    .kpi-bar { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+    .kpi-sub { font-size: 11px; color: var(--text2); margin-bottom: 10px; min-height: 16px; }
+    .kpi-progress { height: 3px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
+    .kpi-bar { height: 100%; border-radius: 2px; transition: width 0.8s cubic-bezier(.4,0,.2,1); }
     .kpi-badge {
       display: inline-block;
       font-size: 10px;
       font-weight: 500;
       padding: 2px 8px;
       border-radius: 10px;
+      margin-bottom: 8px;
     }
-    .badge-green  { background: rgba(107,238,169,0.15); color: var(--green); }
-    .badge-orange { background: rgba(255,194,122,0.15); color: var(--orange); }
-    .badge-red    { background: rgba(255,77,107,0.15);  color: var(--red); }
+    .b-green  { background: rgba(107,238,169,0.12); color: var(--green); }
+    .b-orange { background: rgba(255,194,122,0.12); color: var(--orange); }
+    .b-red    { background: rgba(255,77,107,0.12);  color: var(--red); }
 
     /* ── CHART GRID ── */
     .charts-row { display: grid; gap: 14px; margin-bottom: 14px; }
@@ -174,147 +195,284 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 18px 20px;
+      padding: 20px 22px;
+      transition: border-color 0.2s;
     }
+    .chart-card:hover { border-color: rgba(0,136,255,0.25); }
+
     .chart-title {
       font-size: 10px;
       font-weight: 500;
       color: var(--text2);
       text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 14px;
+      letter-spacing: 1.2px;
+      margin-bottom: 16px;
     }
     .chart-wrap { position: relative; }
 
     /* ── FUNNEL ── */
-    .funnel { display: flex; flex-direction: column; gap: 10px; padding: 6px 0; }
+    .funnel { display: flex; flex-direction: column; gap: 10px; }
     .funnel-row { display: flex; align-items: center; gap: 12px; }
-    .funnel-lbl { width: 110px; font-size: 11px; color: var(--text2); text-align: right; flex-shrink: 0; }
-    .funnel-track { flex: 1; height: 34px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+    .funnel-lbl { width: 100px; font-size: 11px; color: var(--text2); text-align: right; flex-shrink: 0; }
+    .funnel-track { flex: 1; height: 32px; background: var(--surface3); border-radius: 5px; overflow: hidden; }
     .funnel-fill {
-      height: 100%;
+      height: 100%; display: flex; align-items: center;
+      padding-left: 12px; font-size: 12px; font-weight: 500;
+      color: #fff; border-radius: 5px;
+      transition: width 0.8s cubic-bezier(.4,0,.2,1);
+      min-width: 40px;
+    }
+    .funnel-pct { width: 40px; font-size: 11px; color: var(--text2); flex-shrink: 0; }
+
+    /* ── NOW WHAT ── */
+    .now-what {
+      background: linear-gradient(135deg, var(--surface) 0%, rgba(0,136,255,0.06) 100%);
+      border: 1px solid rgba(0,136,255,0.25);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      margin-top: 14px;
+    }
+    .now-what-header {
       display: flex;
       align-items: center;
-      padding-left: 12px;
-      font-size: 13px;
-      font-weight: 500;
-      color: #fff;
-      border-radius: 4px;
-      transition: width 0.7s ease;
-      min-width: 44px;
-    }
-    .funnel-pct { width: 44px; font-size: 11px; color: var(--text2); flex-shrink: 0; }
-
-    /* ── GOALS TAB ── */
-    .goals-note { font-size: 12px; color: var(--text2); margin-bottom: 18px; }
-    .goals-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-      margin-bottom: 20px;
-    }
-    .goal-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 22px;
-    }
-    .goal-q { font-size: 16px; font-weight: 700; color: var(--blue); margin-bottom: 18px; }
-    .goal-field { margin-bottom: 14px; }
-    .goal-field label {
-      display: block;
-      font-size: 10px;
-      font-weight: 500;
-      color: var(--text2);
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      margin-bottom: 5px;
-    }
-    .goal-field input {
-      width: 100%;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 7px 11px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-family: 'Roboto', sans-serif;
-      font-weight: 300;
-      outline: none;
-    }
-    .goal-field input:focus { border-color: var(--blue); }
-
-    /* ── BUTTONS ── */
-    .btn {
-      padding: 8px 18px;
-      border-radius: 6px;
-      font-size: 12px;
-      font-weight: 500;
-      font-family: 'Roboto', sans-serif;
-      cursor: pointer;
-      border: none;
-      transition: opacity 0.15s;
-    }
-    .btn:hover { opacity: 0.85; }
-    .btn-primary { background: var(--blue); color: #fff; }
-    .btn-outline { background: transparent; color: var(--text2); border: 1px solid var(--border); }
-    .btn-outline:hover { border-color: var(--blue); color: var(--text); }
-
-    .export-bar {
-      display: flex;
       gap: 10px;
+      margin-bottom: 18px;
+    }
+    .now-what-icon {
+      width: 32px; height: 32px;
+      background: var(--blue-dim);
+      border: 1px solid rgba(0,136,255,0.3);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+    .now-what-title { font-size: 13px; font-weight: 500; color: var(--text); }
+    .now-what-sub   { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+    .insight-list { display: flex; flex-direction: column; gap: 10px; }
+    .insight-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      background: var(--surface2);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      animation: fadeIn 0.4s ease forwards;
+      opacity: 0;
+    }
+    .insight-item:nth-child(1) { animation-delay: 0.05s; }
+    .insight-item:nth-child(2) { animation-delay: 0.10s; }
+    .insight-item:nth-child(3) { animation-delay: 0.15s; }
+    .insight-item:nth-child(4) { animation-delay: 0.20s; }
+    .insight-item:nth-child(5) { animation-delay: 0.25s; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .insight-dot {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; flex-shrink: 0; margin-top: 1px;
+    }
+    .dot-up     { background: rgba(107,238,169,0.15); color: var(--green); }
+    .dot-down   { background: rgba(255,77,107,0.15);  color: var(--red); }
+    .dot-warn   { background: rgba(255,194,122,0.15); color: var(--orange); }
+    .dot-idea   { background: rgba(0,136,255,0.15);   color: var(--blue); }
+    .dot-info   { background: rgba(0,213,226,0.15);   color: var(--cyan); }
+
+    .insight-text { font-size: 13px; color: var(--text3); line-height: 1.5; }
+    .insight-text strong { color: var(--text); font-weight: 500; }
+
+    .no-data-msg {
+      font-size: 13px; color: var(--text2); padding: 16px;
+      text-align: center;
+    }
+
+    /* ── EXPORT BAR ── */
+    .export-bar {
+      display: flex; gap: 10px;
       justify-content: flex-end;
       margin-top: 20px;
       padding-top: 20px;
       border-top: 1px solid var(--border);
     }
 
-    .saved-msg { font-size: 11px; color: var(--green); margin-left: 10px; display: none; }
+    /* ── BUTTONS ── */
+    .btn {
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 12px; font-weight: 500;
+      font-family: 'Roboto', sans-serif;
+      cursor: pointer; border: none;
+      transition: all 0.15s;
+    }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: #0077EE; }
+    .btn-outline {
+      background: transparent; color: var(--text2);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--blue); color: var(--text); }
+    .btn-ghost {
+      background: transparent; color: var(--red);
+      border: 1px solid rgba(255,77,107,0.25);
+      padding: 5px 10px; font-size: 11px;
+    }
+    .btn-ghost:hover { background: rgba(255,77,107,0.08); }
+    .btn-add {
+      background: var(--blue-dim);
+      color: var(--blue);
+      border: 1px dashed rgba(0,136,255,0.4);
+      padding: 10px 20px; font-size: 13px;
+      border-radius: 8px; width: 100%;
+      transition: all 0.15s;
+    }
+    .btn-add:hover { background: rgba(0,136,255,0.18); border-color: var(--blue); }
+
+    /* ── GOALS TAB ── */
+    .goals-header {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .goals-header-left h2 { font-size: 18px; font-weight: 500; }
+    .goals-header-left p  { font-size: 12px; color: var(--text2); margin-top: 4px; }
+
+    .goals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .goal-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      position: relative;
+      transition: border-color 0.15s;
+    }
+    .goal-card:hover { border-color: rgba(0,136,255,0.3); }
+
+    .goal-card-header {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .goal-card-num {
+      font-size: 10px; font-weight: 500;
+      color: var(--blue);
+      background: var(--blue-dim);
+      padding: 2px 8px; border-radius: 10px;
+    }
+
+    .goal-field { margin-bottom: 12px; }
+    .goal-field:last-child { margin-bottom: 0; }
+    .goal-field label {
+      display: block;
+      font-size: 10px; font-weight: 500;
+      color: var(--text2);
+      text-transform: uppercase; letter-spacing: 0.8px;
+      margin-bottom: 5px;
+    }
+    .goal-field input,
+    .goal-field select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 11px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 300;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .goal-field input:focus,
+    .goal-field select:focus { border-color: var(--blue); }
+
+    .goal-attainment {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .goal-att-row {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 6px;
+    }
+    .goal-att-label { font-size: 11px; color: var(--text2); }
+    .goal-att-value { font-size: 12px; font-weight: 500; }
+    .goal-progress { height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
+    .goal-progress-bar { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+
+    .goals-footer {
+      display: flex; align-items: center; gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .saved-msg { font-size: 11px; color: var(--green); display: none; }
+
+    /* ── SECTION DIVIDER ── */
+    .section-label {
+      font-size: 10px; font-weight: 500;
+      color: var(--text2); text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin: 20px 0 12px;
+    }
 
     /* ── EMPTY STATE ── */
     .empty {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 160px;
-      color: var(--text2);
-      font-size: 13px;
-      gap: 6px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      height: 160px; color: var(--text2);
+      font-size: 13px; gap: 6px;
+      grid-column: 1 / -1;
     }
-    .empty strong { color: var(--text); font-size: 14px; }
+    .empty strong { color: var(--text); font-size: 15px; }
 
     /* ── PRINT ── */
     @media print {
-      .header, .nav-tabs, .export-bar, select { display: none !important; }
-      body { background: #fff; color: #000; font-size: 12px; }
-      .kpi-card, .chart-card { background: #fff !important; border-color: #ddd !important; break-inside: avoid; }
+      .header, .nav-tabs, .export-bar, select, .btn { display: none !important; }
+      body { background: #fff; color: #000; }
+      .kpi-card, .chart-card, .now-what { background: #fff !important; border-color: #ddd !important; break-inside: avoid; }
       .kpi-value { color: #000 !important; }
-      .kpi-label, .chart-title { color: #555 !important; }
-      :root { --text2: #555; }
+      .kpi-label, .chart-title, .now-what-title { color: #444 !important; }
+      .insight-item { background: #f8f8f8 !important; border-color: #ddd !important; }
+      .insight-text { color: #333 !important; }
     }
 
     /* ── RESPONSIVE ── */
-    @media (max-width: 1280px) {
+    @media (max-width: 1400px) {
       .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 1100px) {
       .row-2-1, .row-2 { grid-template-columns: 1fr; }
       .row-3 { grid-template-columns: 1fr 1fr; }
     }
-    @media (max-width: 800px) {
-      .content { padding: 16px; }
-      .header { padding: 12px 16px; }
+    @media (max-width: 700px) {
+      .content, .header, .nav-tabs { padding-left: 16px; padding-right: 16px; }
       .kpi-grid { grid-template-columns: 1fr 1fr; }
-      .goals-grid { grid-template-columns: 1fr 1fr; }
+      .goals-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-<!-- HEADER -->
+<!-- ── HEADER ── -->
 <div class="header">
   <div class="header-left">
-    <div class="logo">Site<span>Zeus</span> <span style="font-weight:300;color:var(--text2)">RevOps</span></div>
-    <div class="badge" id="lastUpdated">Awaiting sync…</div>
+    <div class="logo">
+      <div class="logo-mark">SZ</div>
+      <span class="logo-text">SiteZeus</span>
+      <span class="logo-sub">/ RevOps</span>
+    </div>
+    <div class="sync-badge" id="lastUpdated">Awaiting sync…</div>
   </div>
   <div class="header-right">
     <select id="fQ" onchange="applyFilters()">
@@ -333,7 +491,7 @@
   </div>
 </div>
 
-<!-- TABS -->
+<!-- ── TABS ── -->
 <div class="nav-tabs">
   <div class="nav-tab active" onclick="switchTab('dashboard',this)">Dashboard</div>
   <div class="nav-tab" onclick="switchTab('goals',this)">Goals</div>
@@ -341,13 +499,13 @@
 
 <div class="content">
 
-  <!-- ── DASHBOARD TAB ── -->
+  <!-- ══════════════════════════════════════════
+       DASHBOARD TAB
+  ══════════════════════════════════════════ -->
   <div id="tab-dashboard" class="tab-panel active">
 
-    <!-- KPIs -->
     <div class="kpi-grid" id="kpiGrid"></div>
 
-    <!-- Row 1: Monthly Trend + Lead Source -->
     <div class="charts-row row-2-1">
       <div class="chart-card">
         <div class="chart-title">Meetings — Scheduled vs. Happened by Month</div>
@@ -359,7 +517,6 @@
       </div>
     </div>
 
-    <!-- Row 2: BDR Performance + Funnel -->
     <div class="charts-row row-2-1">
       <div class="chart-card">
         <div class="chart-title">BDR Performance — Scheduled / Happened / Pipeline</div>
@@ -371,7 +528,6 @@
       </div>
     </div>
 
-    <!-- Row 3: Pipeline by Quarter + Vertical + Stage -->
     <div class="charts-row row-3">
       <div class="chart-card">
         <div class="chart-title">Pipeline Value by Quarter ($)</div>
@@ -387,54 +543,55 @@
       </div>
     </div>
 
-    <!-- Export -->
+    <!-- NOW WHAT -->
+    <div class="now-what">
+      <div class="now-what-header">
+        <div class="now-what-icon">💡</div>
+        <div>
+          <div class="now-what-title">Now What — Analysis &amp; Recommendations</div>
+          <div class="now-what-sub">Auto-generated from your current data. Updates every time you sync.</div>
+        </div>
+      </div>
+      <div id="insightList" class="insight-list">
+        <div class="no-data-msg">Sync your Excel data to generate insights.</div>
+      </div>
+    </div>
+
     <div class="export-bar">
       <button class="btn btn-outline" onclick="exportPDF()">Export PDF</button>
       <button class="btn btn-primary" onclick="exportPPT()">Export PPT</button>
     </div>
   </div>
 
-  <!-- ── GOALS TAB ── -->
+  <!-- ══════════════════════════════════════════
+       GOALS TAB
+  ══════════════════════════════════════════ -->
   <div id="tab-goals" class="tab-panel">
-    <p class="goals-note">Set quarterly targets below. These are stored in your browser and never overwritten by Excel syncs.</p>
-    <div class="goals-grid">
-      <div class="goal-card">
-        <div class="goal-q">Q1 2026</div>
-        <div class="goal-field"><label>Meetings Scheduled</label><input type="number" id="g-q1-sched" placeholder="e.g. 40"></div>
-        <div class="goal-field"><label>Meetings Happened</label><input type="number" id="g-q1-hap" placeholder="e.g. 30"></div>
-        <div class="goal-field"><label>Pipeline Generated ($)</label><input type="number" id="g-q1-pipe" placeholder="e.g. 500000"></div>
-        <div class="goal-field"><label>Revenue Closed ($)</label><input type="number" id="g-q1-close" placeholder="e.g. 200000"></div>
+
+    <div class="goals-header">
+      <div class="goals-header-left">
+        <h2>Quarterly Goals</h2>
+        <p>Goals are stored in your browser and never overwritten by Excel syncs. Name each goal to match your column for automatic tracking.</p>
       </div>
-      <div class="goal-card">
-        <div class="goal-q">Q2 2026</div>
-        <div class="goal-field"><label>Meetings Scheduled</label><input type="number" id="g-q2-sched" placeholder="e.g. 40"></div>
-        <div class="goal-field"><label>Meetings Happened</label><input type="number" id="g-q2-hap" placeholder="e.g. 30"></div>
-        <div class="goal-field"><label>Pipeline Generated ($)</label><input type="number" id="g-q2-pipe" placeholder="e.g. 500000"></div>
-        <div class="goal-field"><label>Revenue Closed ($)</label><input type="number" id="g-q2-close" placeholder="e.g. 200000"></div>
-      </div>
-      <div class="goal-card">
-        <div class="goal-q">Q3 2026</div>
-        <div class="goal-field"><label>Meetings Scheduled</label><input type="number" id="g-q3-sched" placeholder="e.g. 40"></div>
-        <div class="goal-field"><label>Meetings Happened</label><input type="number" id="g-q3-hap" placeholder="e.g. 30"></div>
-        <div class="goal-field"><label>Pipeline Generated ($)</label><input type="number" id="g-q3-pipe" placeholder="e.g. 500000"></div>
-        <div class="goal-field"><label>Revenue Closed ($)</label><input type="number" id="g-q3-close" placeholder="e.g. 200000"></div>
-      </div>
-      <div class="goal-card">
-        <div class="goal-q">Q4 2026</div>
-        <div class="goal-field"><label>Meetings Scheduled</label><input type="number" id="g-q4-sched" placeholder="e.g. 40"></div>
-        <div class="goal-field"><label>Meetings Happened</label><input type="number" id="g-q4-hap" placeholder="e.g. 30"></div>
-        <div class="goal-field"><label>Pipeline Generated ($)</label><input type="number" id="g-q4-pipe" placeholder="e.g. 500000"></div>
-        <div class="goal-field"><label>Revenue Closed ($)</label><input type="number" id="g-q4-close" placeholder="e.g. 200000"></div>
-      </div>
+      <button class="btn btn-primary" onclick="addGoal()">+ Add Goal</button>
     </div>
-    <button class="btn btn-primary" onclick="saveGoals()">Save Goals</button>
-    <span class="saved-msg" id="savedMsg">✓ Saved</span>
+
+    <div class="goals-grid" id="goalsGrid"></div>
+
+    <button class="btn-add" onclick="addGoal()">+ Add another goal</button>
+
+    <div class="goals-footer" style="margin-top:20px">
+      <button class="btn btn-primary" onclick="saveGoals()">Save All Goals</button>
+      <span class="saved-msg" id="savedMsg">✓ Goals saved</span>
+    </div>
   </div>
 
 </div>
 
 <script>
-// ── CONFIG ──────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════
 const DATA_URL = 'data.json';
 
 const BRAND = {
@@ -444,19 +601,36 @@ const BRAND = {
   orange: '#FFC27A',
   red:    '#FF4D6B',
   purple: '#702FFF',
-  text2:  '#DCDFED',
-  grid:   'rgba(255,255,255,0.06)',
+  text2:  '#8A9BC0',
+  grid:   'rgba(255,255,255,0.05)',
 };
+const PALETTE = [BRAND.blue, BRAND.cyan, BRAND.green, BRAND.orange, BRAND.red, BRAND.purple, '#FFD248', '#00C466', '#158DFF', '#FF8C42'];
 
-const PALETTE = [BRAND.blue, BRAND.cyan, BRAND.green, BRAND.orange, BRAND.red, BRAND.purple, '#FFD248', '#00C466'];
+// Columns available for goal tracking
+const TRACKABLE_COLS = [
+  { label: 'Meetings Scheduled',    key: 'sched',    fmt: 'n' },
+  { label: 'Meetings Happened',     key: 'happened', fmt: 'n' },
+  { label: 'Meetings Accepted',     key: 'accepted', fmt: 'n' },
+  { label: 'Entered Pipeline',      key: 'pipe_cnt', fmt: 'n' },
+  { label: 'Pipeline Value ($)',    key: 'pipe_val', fmt: '$' },
+  { label: 'Deals Closed (count)',  key: 'close_cnt',fmt: 'n' },
+  { label: 'Revenue Closed ($)',    key: 'close_val',fmt: '$' },
+  { label: 'Total Reschedules',     key: 'reschedules',fmt:'n'},
+];
 
-// ── STATE ────────────────────────────────────────────────────
-let allRows = [], filteredRows = [], goals = {}, _charts = {};
+const PERIODS = ['Q1','Q2','Q3','Q4','H1','H2','Annual'];
 
-// ── BOOT ────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+let allRows = [], filteredRows = [], goals = [], _charts = {};
+
+// ═══════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   loadGoals();
-  populateGoalInputs();
+  renderGoalsTab();
   fetchData();
 });
 
@@ -466,32 +640,37 @@ async function fetchData() {
     if (!r.ok) throw new Error(r.status);
     const json = await r.json();
     allRows = (json.rows || []).filter(r => r && Object.values(r).some(v => v !== '' && v != null));
-    const ts = json.lastUpdated ? new Date(json.lastUpdated).toLocaleString('en-US', { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' }) : null;
-    document.getElementById('lastUpdated').textContent = ts ? 'Synced ' + ts : 'Data loaded';
+    const el = document.getElementById('lastUpdated');
+    if (json.lastUpdated) {
+      const ts = new Date(json.lastUpdated).toLocaleString('en-US', { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' });
+      el.textContent = 'Synced ' + ts;
+      el.classList.add('live');
+    } else {
+      el.textContent = 'Data loaded';
+    }
     buildFilterOptions();
     applyFilters();
   } catch {
-    document.getElementById('lastUpdated').textContent = 'No data yet — run Office Script to sync';
-    document.getElementById('kpiGrid').innerHTML = `<div style="grid-column:1/-1" class="empty"><strong>No data loaded</strong>Run the Office Script in your Excel sheet to push data here.</div>`;
+    document.getElementById('lastUpdated').textContent = 'No data — run Office Script to sync';
+    document.getElementById('kpiGrid').innerHTML =
+      `<div class="empty"><strong>No data loaded</strong>Run the Office Script in Excel Online to populate the dashboard.</div>`;
+    document.getElementById('insightList').innerHTML =
+      `<div class="no-data-msg">Sync your Excel data to generate insights.</div>`;
   }
 }
 
-// ── HELPERS ──────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════
 const truthy = v => {
   if (v === true || v === 1) return true;
   if (!v) return false;
   return ['true','yes','y','x','1'].includes(String(v).trim().toLowerCase());
 };
-
-const toNum = v => {
-  const n = parseFloat(String(v ?? '').replace(/[$,]/g, ''));
-  return isNaN(n) ? 0 : n;
-};
-
-const fmtDollar = n => n >= 1e6 ? '$' + (n/1e6).toFixed(1) + 'M' : n >= 1e3 ? '$' + (n/1e3).toFixed(0) + 'K' : '$' + n.toFixed(0);
-const fmtNum   = n => n.toLocaleString();
-const pct      = (a, b) => b ? Math.round(a / b * 100) : 0;
-
+const toNum = v => { const n = parseFloat(String(v ?? '').replace(/[$,]/g, '')); return isNaN(n) ? 0 : n; };
+const fmtD  = n => n >= 1e6 ? '$'+(n/1e6).toFixed(1)+'M' : n >= 1e3 ? '$'+(n/1e3).toFixed(0)+'K' : '$'+Math.round(n).toLocaleString();
+const fmtN  = n => Math.round(n).toLocaleString();
+const pct   = (a,b) => b ? Math.round(a/b*100) : 0;
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 function normMonth(v) {
@@ -500,41 +679,56 @@ function normMonth(v) {
   const idx = MONTHS.findIndex(m => s.toLowerCase().startsWith(m.toLowerCase()));
   if (idx >= 0) return MONTHS[idx];
   const n = parseInt(s);
-  if (n >= 1 && n <= 12) return MONTHS[n - 1];
+  if (n >= 1 && n <= 12) return MONTHS[n-1];
   return null;
 }
 
-// ── FILTERS ──────────────────────────────────────────────────
+// Compute derived metrics from a row set
+function computeMetrics(rows) {
+  const scheduled  = rows.filter(r => r['Scheduled'] || r['Schedule (M)']).length;
+  const happened   = rows.filter(r => truthy(r['Mtg. Happened'])).length;
+  const accepted   = rows.filter(r => truthy(r['Mtg. Acceped?']) || truthy(r['Mtg. Accepted?'])).length;
+  const pipe_cnt   = rows.filter(r => truthy(r['Entered the Pipe']) || truthy(r['PipelineGen'])).length;
+  const pipe_val   = rows.filter(r => truthy(r['Entered the Pipe']) || truthy(r['PipelineGen'])).reduce((s,r)=>s+toNum(r['Deal Amount']),0);
+  const close_cnt  = rows.filter(r => r['Close Date'] && String(r['Close Date']).trim()).length;
+  const close_val  = rows.filter(r => r['Close Date'] && String(r['Close Date']).trim()).reduce((s,r)=>s+toNum(r['Deal Amount']),0);
+  const reschedules= rows.reduce((s,r)=>s+toNum(r['Reschedules']),0);
+  const cycles     = rows.map(r=>toNum(r['Sales Cycle Length'])).filter(n=>n>0);
+  const avg_cycle  = cycles.length ? Math.round(cycles.reduce((a,b)=>a+b,0)/cycles.length) : 0;
+  return { scheduled, happened, accepted, pipe_cnt, pipe_val, close_cnt, close_val, reschedules, avg_cycle };
+}
+
+// ═══════════════════════════════════════════════════
+// FILTERS
+// ═══════════════════════════════════════════════════
 function buildFilterOptions() {
-  const bdrs  = [...new Set(allRows.map(r => r['BDR Generator']).filter(Boolean))].sort();
-  const verts = [...new Set(allRows.map(r => r['Vertical']).filter(Boolean))].sort();
-  const addOpts = (id, arr) => {
+  const bdrs  = [...new Set(allRows.map(r=>r['BDR Generator']).filter(Boolean))].sort();
+  const verts = [...new Set(allRows.map(r=>r['Vertical']).filter(Boolean))].sort();
+  [['fBDR',bdrs],['fVert',verts]].forEach(([id,arr]) => {
     const sel = document.getElementById(id);
     arr.forEach(v => { const o = document.createElement('option'); o.value = o.textContent = v; sel.appendChild(o); });
-  };
-  addOpts('fBDR', bdrs);
-  addOpts('fVert', verts);
+  });
 }
 
 function applyFilters() {
   const q    = document.getElementById('fQ').value;
   const bdr  = document.getElementById('fBDR').value;
   const vert = document.getElementById('fVert').value;
-
   filteredRows = allRows.filter(r => {
     if (q !== 'all') {
       const cols = ['Schedule (Q)','Happened (Q)','Pipe (Q)','Close (Q)'];
-      if (!cols.some(c => String(r[c] || '').includes(q))) return false;
+      if (!cols.some(c => String(r[c]||'').includes(q))) return false;
     }
     if (bdr  !== 'all' && r['BDR Generator'] !== bdr)  return false;
     if (vert !== 'all' && r['Vertical']       !== vert) return false;
     return true;
   });
-
   renderAll();
 }
 
-// ── RENDER ───────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+// RENDER ALL
+// ═══════════════════════════════════════════════════
 function renderAll() {
   renderKPIs();
   renderMonthly();
@@ -544,241 +738,431 @@ function renderAll() {
   renderPipeQ();
   renderVert();
   renderStage();
+  renderInsights();
+  renderGoalsTab(); // refresh attainment bars
 }
 
-// ── KPIs ─────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+// KPIs
+// ═══════════════════════════════════════════════════
 function renderKPIs() {
-  const rows = filteredRows;
-  const q    = document.getElementById('fQ').value;
-  const qk   = q === 'all' ? null : 'q' + q;
+  const m = computeMetrics(filteredRows);
+  const q = document.getElementById('fQ').value;
 
-  const scheduled = rows.filter(r => r['Scheduled'] || r['Schedule (M)']).length;
-  const happened  = rows.filter(r => truthy(r['Mtg. Happened'])).length;
-  const inPipe    = rows.filter(r => truthy(r['Entered the Pipe']) || truthy(r['PipelineGen'])).length;
-  const pipeVal   = rows.filter(r => truthy(r['Entered the Pipe']) || truthy(r['PipelineGen'])).reduce((s, r) => s + toNum(r['Deal Amount']), 0);
-  const closed    = rows.filter(r => r['Close Date'] && String(r['Close Date']).trim()).length;
-  const closedVal = rows.filter(r => r['Close Date'] && String(r['Close Date']).trim()).reduce((s, r) => s + toNum(r['Deal Amount']), 0);
-  const avgCycle  = (() => { const cs = rows.map(r => toNum(r['Sales Cycle Length'])).filter(n => n > 0); return cs.length ? Math.round(cs.reduce((a,b) => a+b,0)/cs.length) : 0; })();
-  const showRate  = pct(happened, scheduled);
+  // Find matching goals for current filter
+  const goalFor = (colKey) => {
+    const period = q === 'all' ? null : 'Q'+q;
+    const matched = goals.filter(g => {
+      if (g.col !== colKey) return false;
+      if (!period) return true;
+      return !g.period || g.period === period || g.period === 'Annual';
+    });
+    return matched.reduce((s,g) => s + toNum(g.target), 0);
+  };
 
-  const gSum = m => ['q1','q2','q3','q4'].reduce((s, q) => s + (goals[q]?.[m] || 0), 0);
-  const gVal = (m) => qk ? (goals[qk]?.[m] || 0) : gSum(m);
+  const showRate = pct(m.happened, m.scheduled);
+  const hapToPipe = pct(m.pipe_cnt, m.happened);
 
   const kpis = [
-    { label:'Meetings Scheduled', val:fmtNum(scheduled), color:'blue',   goal:gVal('sched'), actual:scheduled, fmt:'n'  },
-    { label:'Meetings Happened',  val:fmtNum(happened),  color:'cyan',   goal:gVal('hap'),   actual:happened,  fmt:'n', sub:showRate+'% show rate' },
-    { label:'Pipeline Generated', val:fmtDollar(pipeVal),color:'green',  goal:gVal('pipe'),  actual:pipeVal,   fmt:'$'  },
-    { label:'Revenue Closed',     val:fmtDollar(closedVal),color:'orange',goal:gVal('close'),actual:closedVal, fmt:'$'  },
-    { label:'Avg Sales Cycle',    val:avgCycle+'d',      color:'purple', noGoal:true, sub: pct(inPipe,happened)+'% happen → pipe' },
+    { label:'Meetings Scheduled', val:fmtN(m.scheduled), color:'blue',   goal:goalFor('sched'),    actual:m.scheduled, fmt:'n' },
+    { label:'Meetings Happened',  val:fmtN(m.happened),  color:'cyan',   goal:goalFor('happened'), actual:m.happened,  fmt:'n', sub:showRate+'% show rate' },
+    { label:'Pipeline Generated', val:fmtD(m.pipe_val),  color:'green',  goal:goalFor('pipe_val'), actual:m.pipe_val,  fmt:'$' },
+    { label:'Revenue Closed',     val:fmtD(m.close_val), color:'orange', goal:goalFor('close_val'),actual:m.close_val, fmt:'$' },
+    { label:'Avg Sales Cycle',    val:m.avg_cycle+'d',   color:'purple', noGoal:true, sub:hapToPipe+'% happen → pipe' },
   ];
 
   document.getElementById('kpiGrid').innerHTML = kpis.map(k => {
     const prog = k.goal ? Math.min(100, pct(k.actual, k.goal)) : 0;
-    const cls  = k.goal ? (prog >= 100 ? 'badge-green' : prog >= 70 ? 'badge-orange' : 'badge-red') : '';
-    const gTxt = k.goal ? (k.fmt === '$' ? fmtDollar(k.goal) : fmtNum(k.goal)) : '';
+    const cls  = k.goal ? (prog>=100?'b-green':prog>=70?'b-orange':'b-red') : '';
+    const gTxt = k.goal ? (k.fmt==='$' ? fmtD(k.goal) : fmtN(k.goal)) : '';
     return `<div class="kpi-card ${k.color}">
       <div class="kpi-label">${k.label}</div>
       <div class="kpi-value">${k.val}</div>
-      <div class="kpi-sub">${k.sub || '&nbsp;'}</div>
-      ${k.goal ? `<div style="margin-bottom:6px"><span class="kpi-badge ${cls}">${prog}% of ${gTxt}</span></div>` : ''}
+      <div class="kpi-sub">${k.sub||'&nbsp;'}</div>
+      ${k.goal ? `<span class="kpi-badge ${cls}">${prog}% of ${gTxt}</span>` : ''}
       ${k.goal ? `<div class="kpi-progress"><div class="kpi-bar" style="width:${prog}%;background:var(--${k.color})"></div></div>` : ''}
     </div>`;
   }).join('');
 }
 
-// ── CHART HELPERS ────────────────────────────────────────────
-const chartOpts = (extra={}) => ({
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: { legend: { labels: { color: BRAND.text2, boxWidth: 10, padding: 10, font: { family: 'Roboto', size: 11 } } } },
+// ═══════════════════════════════════════════════════
+// CHARTS
+// ═══════════════════════════════════════════════════
+const baseOpts = (extra={}) => ({
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{ labels:{ color:BRAND.text2, boxWidth:10, padding:10, font:{family:'Roboto',size:11} } } },
   ...extra
 });
-
-const axisOpts = () => ({
-  scales: {
-    x: { ticks: { color: BRAND.text2, font:{size:11} }, grid: { color: BRAND.grid } },
-    y: { ticks: { color: BRAND.text2, font:{size:11} }, grid: { color: BRAND.grid }, beginAtZero: true }
+const scaleOpts = (yCallback) => ({
+  scales:{
+    x:{ ticks:{color:BRAND.text2,font:{size:11}}, grid:{color:BRAND.grid} },
+    y:{ ticks:{color:BRAND.text2,font:{size:11}, ...(yCallback?{callback:yCallback}:{})}, grid:{color:BRAND.grid}, beginAtZero:true }
   }
 });
 
-function mkChart(id, type, data, opts) {
-  if (_charts[id]) _charts[id].destroy();
-  const ctx = document.getElementById(id).getContext('2d');
-  _charts[id] = new Chart(ctx, { type, data, options: opts });
-  return _charts[id];
+function mkChart(id,type,data,opts) {
+  if(_charts[id]) _charts[id].destroy();
+  const ctx = document.getElementById(id)?.getContext('2d');
+  if(!ctx) return;
+  _charts[id] = new Chart(ctx,{type,data,options:opts});
 }
 
-// ── MONTHLY TREND ─────────────────────────────────────────────
 function renderMonthly() {
   const byM = {};
-  MONTHS.forEach(m => byM[m] = { sched: 0, hap: 0 });
+  MONTHS.forEach(m => byM[m]={s:0,h:0});
   filteredRows.forEach(r => {
-    const sm = normMonth(r['Schedule (M)']);
-    const hm = normMonth(r['Happened (M)']);
-    if (sm && byM[sm]) byM[sm].sched++;
-    if (hm && byM[hm] && truthy(r['Mtg. Happened'])) byM[hm].hap++;
+    const sm=normMonth(r['Schedule (M)']); const hm=normMonth(r['Happened (M)']);
+    if(sm&&byM[sm]) byM[sm].s++;
+    if(hm&&byM[hm]&&truthy(r['Mtg. Happened'])) byM[hm].h++;
   });
-  mkChart('cMonthly', 'bar', {
-    labels: MONTHS,
-    datasets: [
-      { label:'Scheduled', data: MONTHS.map(m => byM[m].sched), backgroundColor: BRAND.blue   + 'BB', borderRadius: 3 },
-      { label:'Happened',  data: MONTHS.map(m => byM[m].hap),   backgroundColor: BRAND.cyan   + 'BB', borderRadius: 3 },
+  mkChart('cMonthly','bar',{
+    labels:MONTHS,
+    datasets:[
+      {label:'Scheduled',data:MONTHS.map(m=>byM[m].s),backgroundColor:BRAND.blue+'BB',borderRadius:3},
+      {label:'Happened', data:MONTHS.map(m=>byM[m].h),backgroundColor:BRAND.cyan+'BB',borderRadius:3},
     ]
-  }, { ...chartOpts(), ...axisOpts() });
+  },{...baseOpts(),...scaleOpts()});
 }
 
-// ── LEAD SOURCE ───────────────────────────────────────────────
 function renderLeadSrc() {
-  const counts = {};
-  filteredRows.forEach(r => { const s = String(r['Lead Source']||'').trim(); if (s) counts[s] = (counts[s]||0)+1; });
-  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,8);
-  if (!sorted.length) { if(_charts.cLeadSrc) _charts.cLeadSrc.destroy(); return; }
-  mkChart('cLeadSrc', 'doughnut', {
-    labels: sorted.map(([k])=>k),
-    datasets: [{ data: sorted.map(([,v])=>v), backgroundColor: PALETTE, borderWidth: 0, hoverOffset: 4 }]
-  }, chartOpts({ plugins: { legend: { position:'right', labels: { color: BRAND.text2, boxWidth:9, padding:8, font:{family:'Roboto',size:10} } } } }));
+  const counts={};
+  filteredRows.forEach(r=>{const s=String(r['Lead Source']||'').trim();if(s)counts[s]=(counts[s]||0)+1;});
+  const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,9);
+  if(!sorted.length){if(_charts.cLeadSrc)_charts.cLeadSrc.destroy();return;}
+  mkChart('cLeadSrc','doughnut',{
+    labels:sorted.map(([k])=>k),
+    datasets:[{data:sorted.map(([,v])=>v),backgroundColor:PALETTE,borderWidth:0,hoverOffset:4}]
+  },baseOpts({plugins:{legend:{position:'right',labels:{color:BRAND.text2,boxWidth:9,padding:8,font:{family:'Roboto',size:10}}}}}));
 }
 
-// ── BDR PERFORMANCE ───────────────────────────────────────────
 function renderBDR() {
-  const d = {};
-  filteredRows.forEach(r => {
-    const n = String(r['BDR Generator']||'').trim(); if (!n) return;
-    if (!d[n]) d[n] = { s:0, h:0, p:0 };
-    if (r['Scheduled'] || r['Schedule (M)']) d[n].s++;
-    if (truthy(r['Mtg. Happened'])) d[n].h++;
-    if (truthy(r['Entered the Pipe']) || truthy(r['PipelineGen'])) d[n].p++;
+  const d={};
+  filteredRows.forEach(r=>{
+    const n=String(r['BDR Generator']||'').trim();if(!n)return;
+    if(!d[n])d[n]={s:0,h:0,p:0};
+    if(r['Scheduled']||r['Schedule (M)'])d[n].s++;
+    if(truthy(r['Mtg. Happened']))d[n].h++;
+    if(truthy(r['Entered the Pipe'])||truthy(r['PipelineGen']))d[n].p++;
   });
-  const sorted = Object.entries(d).sort((a,b)=>b[1].s-a[1].s);
-  if (!sorted.length) { if(_charts.cBDR) _charts.cBDR.destroy(); return; }
-  mkChart('cBDR', 'bar', {
-    labels: sorted.map(([k])=>k),
-    datasets: [
-      { label:'Scheduled', data: sorted.map(([,v])=>v.s), backgroundColor: BRAND.blue  +'BB', borderRadius:3 },
-      { label:'Happened',  data: sorted.map(([,v])=>v.h), backgroundColor: BRAND.cyan  +'BB', borderRadius:3 },
-      { label:'Pipeline',  data: sorted.map(([,v])=>v.p), backgroundColor: BRAND.green +'BB', borderRadius:3 },
+  const sorted=Object.entries(d).sort((a,b)=>b[1].s-a[1].s);
+  if(!sorted.length){if(_charts.cBDR)_charts.cBDR.destroy();return;}
+  mkChart('cBDR','bar',{
+    labels:sorted.map(([k])=>k),
+    datasets:[
+      {label:'Scheduled',data:sorted.map(([,v])=>v.s),backgroundColor:BRAND.blue+'BB',borderRadius:3},
+      {label:'Happened', data:sorted.map(([,v])=>v.h),backgroundColor:BRAND.cyan+'BB',borderRadius:3},
+      {label:'Pipeline', data:sorted.map(([,v])=>v.p),backgroundColor:BRAND.green+'BB',borderRadius:3},
     ]
-  }, { ...chartOpts(), indexAxis:'y', ...axisOpts() });
+  },{...baseOpts(),indexAxis:'y',...scaleOpts()});
 }
 
-// ── FUNNEL ────────────────────────────────────────────────────
 function renderFunnel() {
+  const rows=filteredRows;
+  const s=rows.filter(r=>r['Scheduled']||r['Schedule (M)']).length;
+  const h=rows.filter(r=>truthy(r['Mtg. Happened'])).length;
+  const p=rows.filter(r=>truthy(r['Entered the Pipe'])||truthy(r['PipelineGen'])).length;
+  const c=rows.filter(r=>r['Close Date']&&String(r['Close Date']).trim()).length;
+  const max=s||1;
+  const stages=[{l:'Scheduled',n:s,col:BRAND.blue},{l:'Happened',n:h,col:BRAND.cyan},{l:'In Pipeline',n:p,col:BRAND.green},{l:'Closed',n:c,col:BRAND.orange}];
+  document.getElementById('funnel').innerHTML=stages.map((st,i)=>`
+    <div class="funnel-row">
+      <div class="funnel-lbl">${st.l}</div>
+      <div class="funnel-track"><div class="funnel-fill" style="width:${Math.round(st.n/max*100)}%;background:${st.col}">${fmtN(st.n)}</div></div>
+      <div class="funnel-pct">${i>0?pct(st.n,stages[i-1].n)+'%':''}</div>
+    </div>`).join('');
+}
+
+function renderPipeQ() {
+  const vals={'1':0,'2':0,'3':0,'4':0};
+  filteredRows.forEach(r=>{
+    const q=String(r['Pipe (Q)']||'');const amt=toNum(r['Deal Amount']);if(!amt)return;
+    ['1','2','3','4'].forEach(n=>{if(q.includes(n))vals[n]+=amt;});
+  });
+  mkChart('cPipeQ','bar',{
+    labels:['Q1','Q2','Q3','Q4'],
+    datasets:[{label:'Pipeline ($)',data:['1','2','3','4'].map(n=>vals[n]),backgroundColor:PALETTE,borderRadius:5}]
+  },{...baseOpts({plugins:{legend:{display:false}}}),...scaleOpts(v=>fmtD(v))});
+}
+
+function renderVert() {
+  const counts={};
+  filteredRows.forEach(r=>{const v=String(r['Vertical']||'').trim();if(v)counts[v]=(counts[v]||0)+1;});
+  const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  if(!sorted.length){if(_charts.cVert)_charts.cVert.destroy();return;}
+  mkChart('cVert','bar',{
+    labels:sorted.map(([k])=>k),
+    datasets:[{data:sorted.map(([,v])=>v),backgroundColor:PALETTE.map(c=>c+'BB'),borderRadius:3}]
+  },{...baseOpts({plugins:{legend:{display:false}}}),scales:{
+    x:{ticks:{color:BRAND.text2,font:{size:10},maxRotation:30},grid:{display:false}},
+    y:{ticks:{color:BRAND.text2,font:{size:11}},grid:{color:BRAND.grid},beginAtZero:true}
+  }});
+}
+
+function renderStage() {
+  const d={};
+  filteredRows.forEach(r=>{const s=String(r['Pipeline Stage']||'').trim();if(!s)return;if(!d[s])d[s]=0;d[s]+=toNum(r['Deal Amount'])||1;});
+  const sorted=Object.entries(d).sort((a,b)=>b[1]-a[1]);
+  if(!sorted.length){if(_charts.cStage)_charts.cStage.destroy();return;}
+  mkChart('cStage','doughnut',{
+    labels:sorted.map(([k])=>k),
+    datasets:[{data:sorted.map(([,v])=>v),backgroundColor:PALETTE,borderWidth:0,hoverOffset:4}]
+  },baseOpts({plugins:{legend:{position:'right',labels:{color:BRAND.text2,boxWidth:9,padding:8,font:{family:'Roboto',size:10}}},tooltip:{callbacks:{label:c=>` ${c.label}: ${fmtD(c.raw)}`}}}}));
+}
+
+// ═══════════════════════════════════════════════════
+// NOW WHAT — INSIGHTS ENGINE
+// ═══════════════════════════════════════════════════
+function renderInsights() {
   const rows = filteredRows;
-  const sched = rows.filter(r => r['Scheduled'] || r['Schedule (M)']).length;
-  const hap   = rows.filter(r => truthy(r['Mtg. Happened'])).length;
-  const pipe  = rows.filter(r => truthy(r['Entered the Pipe']) || truthy(r['PipelineGen'])).length;
-  const close = rows.filter(r => r['Close Date'] && String(r['Close Date']).trim()).length;
-  const max   = sched || 1;
+  const container = document.getElementById('insightList');
 
-  const stages = [
-    { lbl:'Scheduled', n:sched, color:BRAND.blue   },
-    { lbl:'Happened',  n:hap,   color:BRAND.cyan   },
-    { lbl:'In Pipeline',n:pipe, color:BRAND.green  },
-    { lbl:'Closed',    n:close, color:BRAND.orange },
-  ];
+  if (!rows.length) {
+    container.innerHTML = `<div class="no-data-msg">Sync your Excel data to generate insights.</div>`;
+    return;
+  }
 
-  document.getElementById('funnel').innerHTML = stages.map((s,i) => {
-    const w = Math.round(s.n / max * 100);
-    const conv = i > 0 ? pct(s.n, stages[i-1].n) + '%' : '';
-    return `<div class="funnel-row">
-      <div class="funnel-lbl">${s.lbl}</div>
-      <div class="funnel-track"><div class="funnel-fill" style="width:${w}%;background:${s.color}">${fmtNum(s.n)}</div></div>
-      <div class="funnel-pct">${conv}</div>
+  const m = computeMetrics(rows);
+  const insights = [];
+
+  // 1. Show rate
+  const showRate = pct(m.happened, m.scheduled);
+  if (m.scheduled > 0) {
+    if (showRate >= 75) {
+      insights.push({ type:'up', text:`<strong>Strong show rate at ${showRate}%</strong> — your meeting confirmation process is working. Keep reinforcing pre-call reminders.` });
+    } else if (showRate < 55) {
+      insights.push({ type:'down', text:`<strong>Show rate is only ${showRate}%</strong> — nearly half of scheduled meetings are not happening. Prioritize a 24-hour reminder sequence and double opt-in confirmation.` });
+    } else {
+      insights.push({ type:'warn', text:`<strong>Show rate is ${showRate}%</strong> — room to improve. A structured reminder workflow (email + calendar hold + day-of text) typically pushes this above 70%.` });
+    }
+  }
+
+  // 2. Happen → Pipeline conversion
+  const hapToPipe = pct(m.pipe_cnt, m.happened);
+  if (m.happened > 0) {
+    if (hapToPipe >= 50) {
+      insights.push({ type:'up', text:`<strong>${hapToPipe}% of meetings are generating pipeline</strong> — strong qualification. Focus on replicating the discovery process that's working.` });
+    } else if (hapToPipe < 25) {
+      insights.push({ type:'down', text:`<strong>Only ${hapToPipe}% of meetings enter the pipeline</strong> — review the post-meeting handoff. Either meetings aren't being properly qualified upfront, or follow-through after demos is breaking down.` });
+    } else {
+      insights.push({ type:'warn', text:`<strong>${hapToPipe}% meeting-to-pipeline rate</strong> — mid-range. Tighten ICP criteria to pre-qualify better and increase this ratio without reducing volume.` });
+    }
+  }
+
+  // 3. Top BDR
+  const bdrData = {};
+  rows.forEach(r => {
+    const n = String(r['BDR Generator']||'').trim(); if (!n) return;
+    if (!bdrData[n]) bdrData[n] = { s:0, pipe:0, val:0 };
+    if (r['Scheduled']||r['Schedule (M)']) bdrData[n].s++;
+    if (truthy(r['Entered the Pipe'])||truthy(r['PipelineGen'])) { bdrData[n].pipe++; bdrData[n].val+=toNum(r['Deal Amount']); }
+  });
+  const bdrList = Object.entries(bdrData).sort((a,b)=>b[1].val-a[1].val);
+  if (bdrList.length >= 2) {
+    const [topName, topD] = bdrList[0];
+    const [botName, botD] = bdrList[bdrList.length-1];
+    insights.push({ type:'idea', text:`<strong>${topName} is leading</strong> with ${fmtD(topD.val)} in pipeline from ${topD.s} meetings. ${bdrList.length > 1 ? `Consider having ${topName} share discovery call structure with ${botName}, who has generated ${fmtD(botD.val)}.` : ''}` });
+  } else if (bdrList.length === 1) {
+    const [name, d] = bdrList[0];
+    insights.push({ type:'info', text:`<strong>${name}</strong> has generated ${fmtD(d.val)} in pipeline from ${d.s} scheduled meetings.` });
+  }
+
+  // 4. Lead source concentration
+  const srcCounts = {};
+  rows.forEach(r => { const s=String(r['Lead Source']||'').trim(); if(s) srcCounts[s]=(srcCounts[s]||0)+1; });
+  const srcList = Object.entries(srcCounts).sort((a,b)=>b[1]-a[1]);
+  if (srcList.length > 0 && m.scheduled > 0) {
+    const topSrc = srcList[0][0], topSrcN = srcList[0][1];
+    const topSrcPct = pct(topSrcN, m.scheduled);
+    if (topSrcPct > 65) {
+      insights.push({ type:'warn', text:`<strong>${topSrc} drives ${topSrcPct}% of meetings</strong> — high concentration risk. If this channel underperforms, pipeline dries up fast. Invest in at least 2 secondary sources now.` });
+    } else if (srcList.length >= 3) {
+      insights.push({ type:'up', text:`<strong>Lead source diversification looks healthy</strong> — ${srcList.length} active sources. ${topSrc} leads at ${topSrcPct}%, which is sustainable.` });
+    }
+  }
+
+  // 5. Sales cycle
+  if (m.avg_cycle > 0) {
+    if (m.avg_cycle > 90) {
+      insights.push({ type:'warn', text:`<strong>Average sales cycle is ${m.avg_cycle} days</strong> — over 3 months. Identify the longest stages in your pipeline and add a champion-building step to accelerate decisions.` });
+    } else if (m.avg_cycle <= 45) {
+      insights.push({ type:'up', text:`<strong>Avg sales cycle of ${m.avg_cycle} days</strong> is lean. Protect this by avoiding unnecessary procurement loops — get agreement on timeline early in discovery.` });
+    } else {
+      insights.push({ type:'info', text:`<strong>Avg sales cycle is ${m.avg_cycle} days</strong>. Review deals stalled over ${Math.round(m.avg_cycle * 1.5)} days — they're unlikely to close without an intervention.` });
+    }
+  }
+
+  // Reschedules
+  if (m.reschedules > 0 && m.scheduled > 0) {
+    const reschedRate = (m.reschedules / m.scheduled).toFixed(1);
+    if (parseFloat(reschedRate) > 0.5) {
+      insights.push({ type:'warn', text:`<strong>${m.reschedules} total reschedules</strong> (${reschedRate} per meeting on average) — high friction. Prospects rescheduling often signal low priority. Add a qualification question before booking.` });
+    }
+  }
+
+  const icons = { up:'↑', down:'↓', warn:'!', idea:'→', info:'·' };
+  const dotClass = { up:'dot-up', down:'dot-down', warn:'dot-warn', idea:'dot-idea', info:'dot-info' };
+
+  container.innerHTML = insights.slice(0,5).map(ins => `
+    <div class="insight-item">
+      <div class="insight-dot ${dotClass[ins.type]}">${icons[ins.type]}</div>
+      <div class="insight-text">${ins.text}</div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// GOALS — DYNAMIC
+// ═══════════════════════════════════════════════════
+function loadGoals() {
+  try { goals = JSON.parse(localStorage.getItem('sz-revops-goals-v2') || '[]'); }
+  catch { goals = []; }
+  if (!Array.isArray(goals)) goals = [];
+}
+
+function saveGoals() {
+  // Read current inputs back into goals array
+  goals = goals.map((g, i) => ({
+    name:   document.getElementById(`gn-${i}`)?.value || g.name,
+    col:    document.getElementById(`gc-${i}`)?.value || g.col,
+    target: toNum(document.getElementById(`gt-${i}`)?.value),
+    period: document.getElementById(`gp-${i}`)?.value || g.period,
+  }));
+  localStorage.setItem('sz-revops-goals-v2', JSON.stringify(goals));
+  const msg = document.getElementById('savedMsg');
+  msg.style.display = 'inline';
+  setTimeout(() => msg.style.display = 'none', 2500);
+  renderGoalsTab();
+  renderKPIs();
+}
+
+function addGoal() {
+  saveGoals(); // persist current state first
+  goals.push({ name:'New Goal', col:'sched', target:0, period:'Q1' });
+  localStorage.setItem('sz-revops-goals-v2', JSON.stringify(goals));
+  renderGoalsTab();
+  // scroll to new card
+  setTimeout(() => {
+    const cards = document.querySelectorAll('.goal-card');
+    cards[cards.length-1]?.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }, 50);
+}
+
+function removeGoal(i) {
+  saveGoals();
+  goals.splice(i,1);
+  localStorage.setItem('sz-revops-goals-v2', JSON.stringify(goals));
+  renderGoalsTab();
+  renderKPIs();
+}
+
+function renderGoalsTab() {
+  const m = computeMetrics(filteredRows);
+
+  // Get actual value for a goal's column key
+  const actualFor = (colKey, period) => {
+    let rows = allRows;
+    // Filter by period if specific quarter
+    if (period && period.startsWith('Q')) {
+      const qNum = period.replace('Q','');
+      rows = allRows.filter(r => {
+        const cols = ['Schedule (Q)','Happened (Q)','Pipe (Q)','Close (Q)'];
+        return cols.some(c => String(r[c]||'').includes(qNum));
+      });
+    }
+    const rm = computeMetrics(rows);
+    return rm[colKey] ?? 0;
+  };
+
+  const colOptions = TRACKABLE_COLS.map(c =>
+    `<option value="${c.key}">${c.label}</option>`
+  ).join('');
+
+  const periodOptions = PERIODS.map(p =>
+    `<option value="${p}">${p}</option>`
+  ).join('');
+
+  if (!goals.length) {
+    document.getElementById('goalsGrid').innerHTML =
+      `<div class="empty" style="grid-column:1/-1"><strong>No goals yet</strong>Click "+ Add Goal" to create your first goal.</div>`;
+    return;
+  }
+
+  document.getElementById('goalsGrid').innerHTML = goals.map((g,i) => {
+    const actual = actualFor(g.col, g.period);
+    const target = toNum(g.target);
+    const prog   = target ? Math.min(100, pct(actual, target)) : 0;
+    const cls    = prog >= 100 ? 'var(--green)' : prog >= 70 ? 'var(--orange)' : 'var(--red)';
+    const colDef = TRACKABLE_COLS.find(c=>c.col===g.col||c.key===g.col);
+    const fmtFn  = colDef?.fmt === '$' ? fmtD : fmtN;
+    const actualFmt = fmtFn(actual);
+    const targetFmt = target ? fmtFn(target) : '—';
+
+    // Build select with selected value
+    const colSel = TRACKABLE_COLS.map(c=>
+      `<option value="${c.key}" ${c.key===g.col?'selected':''}>${c.label}</option>`
+    ).join('');
+    const perSel = PERIODS.map(p=>
+      `<option value="${p}" ${p===g.period?'selected':''}>${p}</option>`
+    ).join('');
+
+    return `<div class="goal-card">
+      <div class="goal-card-header">
+        <span class="goal-card-num">Goal ${i+1}</span>
+        <button class="btn btn-ghost" onclick="removeGoal(${i})">✕ Remove</button>
+      </div>
+      <div class="goal-field">
+        <label>Goal Name</label>
+        <input id="gn-${i}" type="text" value="${g.name||''}" placeholder="e.g. Q1 Meetings Target">
+      </div>
+      <div class="goal-field">
+        <label>Track This Column</label>
+        <select id="gc-${i}">${colSel}</select>
+      </div>
+      <div class="goal-field">
+        <label>Target Value</label>
+        <input id="gt-${i}" type="number" value="${g.target||''}" placeholder="e.g. 40">
+      </div>
+      <div class="goal-field">
+        <label>Period</label>
+        <select id="gp-${i}">${perSel}</select>
+      </div>
+      ${target ? `<div class="goal-attainment">
+        <div class="goal-att-row">
+          <span class="goal-att-label">Actual</span>
+          <span class="goal-att-value">${actualFmt}</span>
+        </div>
+        <div class="goal-att-row">
+          <span class="goal-att-label">Target</span>
+          <span class="goal-att-value">${targetFmt}</span>
+        </div>
+        <div class="goal-att-row" style="margin-bottom:8px">
+          <span class="goal-att-label">Attainment</span>
+          <span class="goal-att-value" style="color:${cls}">${prog}%</span>
+        </div>
+        <div class="goal-progress">
+          <div class="goal-progress-bar" style="width:${prog}%;background:${cls}"></div>
+        </div>
+      </div>` : ''}
     </div>`;
   }).join('');
 }
 
-// ── PIPELINE BY QUARTER ───────────────────────────────────────
-function renderPipeQ() {
-  const vals = { '1':0, '2':0, '3':0, '4':0 };
-  filteredRows.forEach(r => {
-    const q = String(r['Pipe (Q)']||'');
-    const amt = toNum(r['Deal Amount']);
-    if (!amt) return;
-    ['1','2','3','4'].forEach(n => { if (q.includes(n)) vals[n] += amt; });
-  });
-  mkChart('cPipeQ', 'bar', {
-    labels: ['Q1','Q2','Q3','Q4'],
-    datasets: [{ label:'Pipeline ($)', data: ['1','2','3','4'].map(n=>vals[n]), backgroundColor: PALETTE, borderRadius:5 }]
-  }, { ...chartOpts({ plugins:{ legend:{ display:false } } }), scales: {
-    x: { ticks:{ color:BRAND.text2, font:{size:11} }, grid:{ display:false } },
-    y: { ticks:{ color:BRAND.text2, font:{size:11}, callback:v=>fmtDollar(v) }, grid:{ color:BRAND.grid }, beginAtZero:true }
-  }});
-}
-
-// ── VERTICAL ─────────────────────────────────────────────────
-function renderVert() {
-  const counts = {};
-  filteredRows.forEach(r => { const v = String(r['Vertical']||'').trim(); if (v) counts[v] = (counts[v]||0)+1; });
-  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  if (!sorted.length) { if(_charts.cVert) _charts.cVert.destroy(); return; }
-  mkChart('cVert', 'bar', {
-    labels: sorted.map(([k])=>k),
-    datasets: [{ data:sorted.map(([,v])=>v), backgroundColor: PALETTE.map(c=>c+'BB'), borderRadius:3 }]
-  }, { ...chartOpts({ plugins:{ legend:{ display:false } } }), scales: {
-    x: { ticks:{ color:BRAND.text2, font:{size:10}, maxRotation:30 }, grid:{ display:false } },
-    y: { ticks:{ color:BRAND.text2, font:{size:11} }, grid:{ color:BRAND.grid }, beginAtZero:true }
-  }});
-}
-
-// ── PIPELINE STAGE ────────────────────────────────────────────
-function renderStage() {
-  const d = {};
-  filteredRows.forEach(r => {
-    const s = String(r['Pipeline Stage']||'').trim(); if (!s) return;
-    if (!d[s]) d[s] = 0;
-    d[s] += toNum(r['Deal Amount']) || 1;
-  });
-  const sorted = Object.entries(d).sort((a,b)=>b[1]-a[1]);
-  if (!sorted.length) { if(_charts.cStage) _charts.cStage.destroy(); return; }
-  mkChart('cStage', 'doughnut', {
-    labels: sorted.map(([k])=>k),
-    datasets: [{ data:sorted.map(([,v])=>v), backgroundColor:PALETTE, borderWidth:0, hoverOffset:4 }]
-  }, { ...chartOpts({ plugins:{ legend:{ position:'right', labels:{ color:BRAND.text2, boxWidth:9, padding:8, font:{family:'Roboto',size:10} } }, tooltip:{ callbacks:{ label: c => ` ${c.label}: ${fmtDollar(c.raw)}` } } } }) });
-}
-
-// ── GOALS ─────────────────────────────────────────────────────
-function loadGoals() {
-  try { goals = JSON.parse(localStorage.getItem('sz-revops-goals')||'{}'); } catch { goals = {}; }
-}
-
-function populateGoalInputs() {
-  ['q1','q2','q3','q4'].forEach(q => {
-    ['sched','hap','pipe','close'].forEach(m => {
-      const el = document.getElementById(`g-${q}-${m}`);
-      if (el && goals[q]?.[m]) el.value = goals[q][m];
-    });
-  });
-}
-
-function saveGoals() {
-  ['q1','q2','q3','q4'].forEach(q => {
-    goals[q] = {};
-    ['sched','hap','pipe','close'].forEach(m => {
-      const el = document.getElementById(`g-${q}-${m}`);
-      goals[q][m] = el ? toNum(el.value) : 0;
-    });
-  });
-  localStorage.setItem('sz-revops-goals', JSON.stringify(goals));
-  const msg = document.getElementById('savedMsg');
-  msg.style.display = 'inline';
-  setTimeout(() => msg.style.display = 'none', 2000);
-  renderKPIs();
-}
-
-// ── TABS ──────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════
 function switchTab(name, el) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
   el.classList.add('active');
 }
 
-// ── EXPORT ───────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════
+// EXPORTS
+// ═══════════════════════════════════════════════════
 function exportPDF() { window.print(); }
 
 function exportPPT() {
-  alert('PPT export will be enabled once your .potx template placeholders are configured. Drop the updated template to activate this button.');
+  alert('PPT export activates once your .potx template placeholders are configured.');
 }
 </script>
 </body>
