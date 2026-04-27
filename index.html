@@ -340,6 +340,7 @@ const GOAL_COL_NAME    = 'Goal';       // the goal description / name
 const GOAL_COL_METRIC  = 'Metric';     // what to measure (e.g. "Meetings Scheduled")
 const GOAL_COL_TARGET  = 'Target';     // numeric target
 const GOAL_COL_PERIOD  = 'Quarter';    // period: Q1 / Q2 / Q3 / Q4 / Annual
+const GOAL_COL_YEAR    = 'Year';       // (optional) year column e.g. 2026
 const GOAL_COL_SOURCE  = 'Lead Source';// (optional) filter by lead source
 // ════════════════════════════════════════════════
 
@@ -673,19 +674,25 @@ function renderInsights(){
 }
 
 // ─── GOAL TRACKER ────────────────────────────────
-// Maps a metric label from the Goals sheet to a computed metric key or formula
 function resolveMetric(label){
   const l=String(label||'').toLowerCase().trim();
   if(!l) return null;
-  if(l.includes('scheduled'))                          return {key:'scheduled',fmt:'n'};
-  if(l.includes('happened')||l.includes('show rate')) return {key:'happened', fmt:'n'};
-  if(l.includes('accepted'))                           return {key:'accepted', fmt:'n'};
-  if(l.includes('pipeline value')||l.includes('pipe val')) return {key:'pipe_val',fmt:'$'};
-  if(l.includes('pipeline')||l.includes('entered'))   return {key:'pipe_cnt',fmt:'n'};
-  if(l.includes('revenue')||l.includes('closed val')) return {key:'close_val',fmt:'$'};
-  if(l.includes('closed')||l.includes('deals closed'))return {key:'close_cnt',fmt:'n'};
-  if(l.includes('reschedule'))                         return {key:'reschedules',fmt:'n'};
-  if(l.includes('cycle'))                              return {key:'avg_cycle', fmt:'n'};
+  // Show rate — target is a decimal (0.65 = 65%), actual computed as happened/scheduled
+  if(l.includes('show rate')||l.includes('happened /')||l.includes('happened/'))
+    return {type:'ratio', compute:m=>m.scheduled>0?m.happened/m.scheduled:0};
+  // PipelineGen = Y — count rows where PipelineGen column = Y
+  if(l.includes('pipelinegen')||(l.includes('pipeline')&&l.includes('=y')))
+    return {type:'colcount', col:'PipelineGen', val:'Y', fmt:'n'};
+  // Standard metrics
+  if(l.includes('scheduled'))  return {type:'metric',key:'scheduled', fmt:'n'};
+  if(l.includes('happened'))   return {type:'metric',key:'happened',  fmt:'n'};
+  if(l.includes('accepted'))   return {type:'metric',key:'accepted',  fmt:'n'};
+  if(l.includes('pipeline value')||l.includes('pipe val')) return {type:'metric',key:'pipe_val',fmt:'$'};
+  if(l.includes('pipeline')||l.includes('entered')) return {type:'metric',key:'pipe_cnt',fmt:'n'};
+  if(l.includes('revenue')||l.includes('closed val')) return {type:'metric',key:'close_val',fmt:'$'};
+  if(l.includes('closed')||l.includes('deals'))  return {type:'metric',key:'close_cnt',fmt:'n'};
+  if(l.includes('reschedule'))  return {type:'metric',key:'reschedules',fmt:'n'};
+  if(l.includes('cycle'))       return {type:'metric',key:'avg_cycle', fmt:'n'};
   return null;
 }
 
@@ -726,7 +733,7 @@ function renderGoalTracker(){
       const target  = toNum(g[GOAL_COL_TARGET]);
       const lgFilter= String(g[GOAL_COL_SOURCE] ||'').trim();
 
-      // Compute actual from main data, filtered by period and optional lead source
+      // Filter rows by quarter, year, and lead source
       let rows=allRows;
       const qMatch=period.match(/^Q(\d)$/i);
       if(qMatch){
@@ -736,38 +743,60 @@ function renderGoalTracker(){
           return qs.some(c=>String(r[c]||'').includes(qn));
         });
       }
-      if(lgFilter) rows=rows.filter(r=>String(r[LEADGEN_COL]||'').trim().toLowerCase()===lgFilter.toLowerCase());
+      const goalYear=String(g[GOAL_COL_YEAR]||'').trim();
+      if(goalYear) rows=rows.filter(r=>String(r['Schedule (Y)']||'').trim()===goalYear);
+      const lgAll=!lgFilter||lgFilter.toLowerCase()==='all';
+      if(!lgAll) rows=rows.filter(r=>String(r[LEADGEN_COL]||'').trim().toLowerCase()===lgFilter.toLowerCase());
 
       const m=metrics(rows);
       const resolved=resolveMetric(metricLbl);
-      const actual=resolved?m[resolved.key]??0:null;
-      const fmt=resolved?.fmt||'n';
-      const fmtFn=fmt==='$'?fmtD:fmtN;
+
+      // Compute actual and display format based on resolved type
+      let actual=null, displayActual='—', displayTarget='—', fmt='n';
+      if(resolved){
+        if(resolved.type==='ratio'){
+          actual=resolved.compute(m);                   // decimal e.g. 0.64
+          displayActual=Math.round(actual*1000)/10+'%'; // "64%"
+          displayTarget=Math.round(target*1000)/10+'%'; // "65%"
+          fmt='%';
+        } else if(resolved.type==='colcount'){
+          actual=rows.filter(r=>String(r[resolved.col]||'').trim().toUpperCase()===resolved.val.toUpperCase()).length;
+          displayActual=fmtN(actual);
+          displayTarget=target?fmtN(target):'—';
+        } else {
+          actual=m[resolved.key]??0;
+          fmt=resolved.fmt||'n';
+          const ff=fmt==='$'?fmtD:fmtN;
+          displayActual=ff(actual);
+          displayTarget=target?(fmt==='$'?fmtD(target):fmtN(target)):'—';
+        }
+      }
 
       // Attainment
       let pr=0, statusCls='gt-na', statusTxt='No Target', accentColor=C.t2;
       if(target&&actual!==null){
-        pr=Math.min(100,pct(actual,target));
-        if(pr>=100){statusCls='gt-on'; statusTxt='On Track';  accentColor=C.green;}
-        else if(pr>=70){statusCls='gt-risk';statusTxt='At Risk';  accentColor=C.orange;}
-        else{statusCls='gt-off'; statusTxt='Behind';    accentColor=C.red;}
+        pr=fmt==='%'?Math.min(100,Math.round(actual/target*100)):Math.min(100,pct(actual,target));
+        if(pr>=100){statusCls='gt-on'; statusTxt='On Track'; accentColor=C.green;}
+        else if(pr>=70){statusCls='gt-risk';statusTxt='At Risk'; accentColor=C.orange;}
+        else{statusCls='gt-off'; statusTxt='Behind'; accentColor=C.red;}
         if(statusCls==='gt-on')onTrack++;
         else if(statusCls==='gt-risk')atRisk++;
         else behind++;
       } else { noTarget++; }
 
+      const periodLabel=period+(goalYear?' '+goalYear:'')+(lgAll?'':' · '+lgFilter);
       html+=`<div class="gt-card">
         <div class="gt-card-accent" style="background:${accentColor}"></div>
-        <div class="gt-period">${period}${lgFilter?' · '+lgFilter:''}</div>
+        <div class="gt-period">${periodLabel}</div>
         <div class="gt-name">${name}</div>
         <div class="gt-metric">${metricLbl||'—'}</div>
         <div class="gt-nums">
           <div class="gt-num">
-            <div class="gt-num-val" style="color:${accentColor}">${actual!==null?fmtFn(actual):'—'}</div>
+            <div class="gt-num-val" style="color:${accentColor}">${displayActual}</div>
             <div class="gt-num-lbl">Actual</div>
           </div>
           <div class="gt-num">
-            <div class="gt-num-val">${target?fmtFn(target):'—'}</div>
+            <div class="gt-num-val">${displayTarget}</div>
             <div class="gt-num-lbl">Target</div>
           </div>
           <div class="gt-num">
