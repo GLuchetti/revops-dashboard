@@ -321,7 +321,7 @@ const QUARTERS = ['Q1','Q2','Q3','Q4'];
 const MONTHS   = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 // ─── STATE ───────────────────────────────────────
-let allRows=[], filteredRows=[], goals=[], _ch={}, leadGenTypes=[];
+let allRows=[], filteredRows=[], goals=[], _ch={}, leadGenTypes=[], activeLG=null;
 
 // ─── BOOT ────────────────────────────────────────
 document.addEventListener('DOMContentLoaded',()=>{ loadGoals(); renderGoalsTab(); fetchData(); });
@@ -422,16 +422,17 @@ function buildLeadGenTabs(){
   const content=document.querySelector('.content');
 
   leadGenTypes.forEach(lg=>{
-    const safeId='tab-lg-'+lg.replace(/[^a-z0-9]/gi,'_');
+    // safeId is the name WITHOUT 'tab-' prefix — switchTab adds it
+    const safeId='lg-'+lg.replace(/[^a-z0-9]/gi,'_');
     // Nav tab
     const t=document.createElement('div');
     t.className='nav-tab';
     t.textContent=lg;
-    t.onclick=()=>{ switchTab(safeId,t); renderLeadGenTab(safeId,lg); };
+    t.onclick=()=>{ activeLG={safeId,lg}; switchTab(safeId,t); renderLeadGenTab(safeId,lg); };
     nav.insertBefore(t,goalsTab);
-    // Tab panel
+    // Tab panel — id must be 'tab-'+safeId so switchTab finds it
     const p=document.createElement('div');
-    p.id=safeId;
+    p.id='tab-'+safeId;
     p.className='tab-panel';
     p.innerHTML=`
       <div class="sec-hdr">${lg} — Pipeline Overview</div>
@@ -443,6 +444,16 @@ function buildLeadGenTabs(){
       <div class="charts-row r2">
         <div class="chart-card"><div class="chart-title">BDR Performance — ${lg}</div><div style="height:200px"><canvas id="${safeId}-bdr"></canvas></div></div>
         <div class="chart-card"><div class="chart-title">Pipeline by Quarter — ${lg}</div><div style="height:200px"><canvas id="${safeId}-pipeq"></canvas></div></div>
+      </div>
+      <div class="now-what" style="margin-top:13px">
+        <div class="nw-hdr">
+          <div class="nw-icon">💡</div>
+          <div>
+            <div class="nw-title">Now What — ${lg} Analysis</div>
+            <div class="nw-sub">Insights specific to this lead source. Refreshes with every filter change.</div>
+          </div>
+        </div>
+        <div id="${safeId}-insights" class="insight-list"><div class="no-data-note">Click this tab to generate insights.</div></div>
       </div>`;
     content.insertBefore(p,document.getElementById('tab-goals'));
   });
@@ -484,10 +495,35 @@ function renderLeadGenTab(safeId,lg){
   // Pipeline by quarter
   const pq={'1':0,'2':0,'3':0,'4':0};rows.forEach(r=>{const q=String(r['Pipe (Q)']||'');const a=toNum(r['Deal Amount']);if(!a)return;['1','2','3','4'].forEach(n=>{if(q.includes(n))pq[n]+=a;});});
   mkChart(safeId+'-pipeq','bar',{labels:['Q1','Q2','Q3','Q4'],datasets:[{label:'Pipeline ($)',data:['1','2','3','4'].map(n=>pq[n]),backgroundColor:PAL,borderRadius:5}]},{...baseOpts({plugins:{legend:{display:false}}}),scales:{x:{ticks:{color:C.t2,font:{size:11}},grid:{display:false}},y:{ticks:{color:C.t2,font:{size:11},callback:v=>fmtD(v)},grid:{color:C.grid},beginAtZero:true}}});
+
+  // Now What insights for this lead source
+  const insEl=document.getElementById(safeId+'-insights');
+  if(!insEl) return;
+  if(!rows.length){ insEl.innerHTML=`<div class="no-data-note">No data for ${lg} with current filters.</div>`; return; }
+  const ins=[];
+  const sr=pct(m.happened,m.scheduled);
+  if(m.scheduled>0){
+    if(sr>=75) ins.push({t:'up',txt:`<strong>Strong ${sr}% show rate for ${lg}</strong> — your confirmation process is working for this channel. Keep the 24-hr reminder cadence.`});
+    else if(sr<55) ins.push({t:'dn',txt:`<strong>${lg} show rate is only ${sr}%</strong> — nearly half of booked meetings aren't happening. Add a structured same-day confirmation step for this channel.`});
+    else ins.push({t:'wn',txt:`<strong>${lg} show rate: ${sr}%</strong> — room to improve. A day-before email + day-of text typically pushes this above 70%.`});
+  }
+  const hp=pct(m.pipe_cnt,m.happened);
+  if(m.happened>0){
+    if(hp>=50) ins.push({t:'up',txt:`<strong>${hp}% of ${lg} meetings generate pipeline</strong> — strong qualification coming from this source. Document the ICP criteria and replicate.`});
+    else if(hp<25) ins.push({t:'dn',txt:`<strong>Only ${hp}% of ${lg} meetings enter pipeline</strong> — this channel is generating volume but not quality. Review ICP fit before booking.`});
+    else ins.push({t:'wn',txt:`<strong>${hp}% meeting-to-pipeline rate for ${lg}.</strong> Tighten pre-qualification to improve conversion from this channel.`});
+  }
+  if(m.pipe_val>0) ins.push({t:'id',txt:`<strong>${lg} has generated ${fmtD(m.pipe_val)} in pipeline</strong> from ${m.pipe_cnt} deal${m.pipe_cnt!==1?'s':''} — avg deal size ${fmtD(m.pipe_cnt?m.pipe_val/m.pipe_cnt:0)}.`});
+  const topBDR=Object.entries(bd).sort((a,b)=>b[1].s-a[1].s)[0];
+  if(topBDR) ins.push({t:'id',txt:`<strong>${topBDR[0]} leads ${lg}</strong> with ${topBDR[1].s} meetings scheduled and ${fmtD(topBDR[1].p>0?rows.filter(r=>String(r['BDR Generator']||'').trim()===topBDR[0]&&inPipe(r)).reduce((s,r)=>s+toNum(r['Deal Amount']),0):0)} pipeline.`});
+  if(m.close_val>0) ins.push({t:'up',txt:`<strong>${fmtD(m.close_val)} closed from ${lg}</strong> — this channel is proving ROI. Protect or increase investment here.`});
+  else if(m.pipe_val>0) ins.push({t:'wn',txt:`<strong>No closed revenue yet from ${lg}</strong> — ${fmtD(m.pipe_val)} is in pipeline. Focus on accelerating the open deals rather than adding more volume.`});
+  const IC={up:'↑',dn:'↓',wn:'!',id:'→',in:'·'};const DC={up:'d-up',dn:'d-dn',wn:'d-wn',id:'d-id',in:'d-in'};
+  insEl.innerHTML=ins.slice(0,5).map(i=>`<div class="insight"><div class="i-dot ${DC[i.t]}">${IC[i.t]}</div><div class="i-txt">${i.txt}</div></div>`).join('');
 }
 
 // ─── RENDER ALL ───────────────────────────────────
-function renderAll(){ renderKPIs();renderMonthly();renderLeadType();renderBDR();renderFunnel();renderPipeQ();renderVert();renderStage();renderInsights();renderGoalsTab(); }
+function renderAll(){ renderKPIs();renderMonthly();renderLeadType();renderBDR();renderFunnel();renderPipeQ();renderVert();renderStage();renderInsights();renderGoalsTab(); if(activeLG)renderLeadGenTab(activeLG.safeId,activeLG.lg); }
 
 // ─── KPIs ────────────────────────────────────────
 function renderKPIs(){
