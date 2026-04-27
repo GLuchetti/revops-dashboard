@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SiteZeus RevOps Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0D0638;
+      --surface:  #1A0A67;
+      --surface2: #22107A;
+      --border:   #30189A;
+      --blue:     #0088FF;
+      --cyan:     #00D5E2;
+      --green:    #6BEEA9;
+      --orange:   #FFC27A;
+      --red:      #FF4D6B;
+      --purple:   #702FFF;
+      --text:     #FFFFFF;
+      --text2:    #DCDFED;
+      --radius:   10px;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 300;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-left { display: flex; align-items: center; gap: 20px; }
+    .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+    .logo span { color: var(--blue); }
+    .badge {
+      font-size: 11px;
+      color: var(--text2);
+      background: var(--surface2);
+      padding: 3px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+
+    /* ── FILTERS ── */
+    select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 300;
+      cursor: pointer;
+      outline: none;
+    }
+    select:focus { border-color: var(--blue); }
+
+    /* ── TABS ── */
+    .nav-tabs {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      display: flex;
+      gap: 0;
+    }
+    .nav-tab {
+      padding: 11px 22px;
+      cursor: pointer;
+      color: var(--text2);
+      border-bottom: 2px solid transparent;
+      font-size: 13px;
+      font-weight: 400;
+      transition: all 0.15s;
+    }
+    .nav-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+    .nav-tab:hover:not(.active) { color: var(--text); }
+
+    /* ── CONTENT ── */
+    .content { padding: 24px 32px; max-width: 1680px; margin: 0 auto; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── KPI GRID ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+    .kpi-card.blue::after   { background: var(--blue); }
+    .kpi-card.cyan::after   { background: var(--cyan); }
+    .kpi-card.green::after  { background: var(--green); }
+    .kpi-card.orange::after { background: var(--orange); }
+    .kpi-card.purple::after { background: var(--purple); }
+
+    .kpi-label {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    .kpi-value {
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--text2);
+      margin-bottom: 8px;
+    }
+    .kpi-progress {
+      height: 3px;
+      background: var(--surface2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .kpi-bar { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+    .kpi-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+    .badge-green  { background: rgba(107,238,169,0.15); color: var(--green); }
+    .badge-orange { background: rgba(255,194,122,0.15); color: var(--orange); }
+    .badge-red    { background: rgba(255,77,107,0.15);  color: var(--red); }
+
+    /* ── CHART GRID ── */
+    .charts-row { display: grid; gap: 14px; margin-bottom: 14px; }
+    .row-2-1 { grid-template-columns: 2fr 1fr; }
+    .row-2   { grid-template-columns: 1fr 1fr; }
+    .row-3   { grid-template-columns: 1fr 1fr 1fr; }
+
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+    }
+    .chart-title {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+    .chart-wrap { position: relative; }
+
+    /* ── FUNNEL ── */
+    .funnel { display: flex; flex-direction: column; gap: 10px; padding: 6px 0; }
+    .funnel-row { display: flex; align-items: center; gap: 12px; }
+    .funnel-lbl { width: 110px; font-size: 11px; color: var(--text2); text-align: right; flex-shrink: 0; }
+    .funnel-track { flex: 1; height: 34px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+    .funnel-fill {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      padding-left: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #fff;
+      border-radius: 4px;
+      transition: width 0.7s ease;
+      min-width: 44px;
+    }
+    .funnel-pct { width: 44px; font-size: 11px; color: var(--text2); flex-shrink: 0; }
+
+    /* ── GOALS TAB ── */
+    .goals-note { font-size: 12px; color: var(--text2); margin-bottom: 18px; }
+    .goals-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .goal-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+    }
+    .goal-q { font-size: 16px; font-weight: 700; color: var(--blue); margin-bottom: 18px; }
+    .goal-field { margin-bottom: 14px; }
+    .goal-field label {
+      display: block;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 5px;
+    }
+    .goal-field input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 7px 11px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 300;
+      outline: none;
+    }
+    .goal-field input:focus { border-color: var(--blue); }
+
+    /* ── BUTTONS ── */
+    .btn {
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      font-family: 'Roboto', sans-serif;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.15s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-outline { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+    .btn-outline:hover { border-color: var(--blue); color: var(--text); }
+
+    .export-bar {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    .saved-msg { font-size: 11px; color: var(--green); margin-left: 10px; display: none; }
+
+    /* ── EMPTY STATE ── */
+    .empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 160px;
+      color: var(--text2);
+      font-size: 13px;
+      gap: 6px;
+    }
+    .empty strong { color: var(--text); font-size: 14px; }
+
+    /* ── PRINT ── */
+    @media print {
+      .header, .nav-tabs, .export-bar, select { display: none !important; }
+      body { background: #fff; color: #000; font-size: 12px; }
+      .kpi-card, .chart-card { background: #fff !important; border-color: #ddd !important; break-inside: avoid; }
+      .kpi-value { color: #000 !important; }
+      .kpi-label, .chart-title { color: #555 !important; }
+      :root { --text2: #555; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1280px) {
+      .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+      .row-2-1, .row-2 { grid-template-columns: 1fr; }
+      .row-3 { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 800px) {
+      .content { padding: 16px; }
+      .header { padding: 12px 16px; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+      .goals-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo">Site<span>Zeus</span> <span style="font-weight:300;color:var(--text2)">RevOps</span></div>
+    <div class="badge" id="lastUpdated">Awaiting sync…</div>
+  </div>
+  <div class="header-right">
+    <select id="fQ" onchange="applyFilters()">
+      <option value="all">All Quarters</option>
+      <option value="1">Q1</option>
+      <option value="2">Q2</option>
+      <option value="3">Q3</option>
+      <option value="4">Q4</option>
+    </select>
+    <select id="fBDR" onchange="applyFilters()">
+      <option value="all">All BDRs</option>
+    </select>
+    <select id="fVert" onchange="applyFilters()">
+      <option value="all">All Verticals</option>
+    </select>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="nav-tabs">
+  <div class="nav-tab active" onclick="switchTab('dashboard',this)">Dashboard</div>
+  <div class="nav-tab" onclick="switchTab('goals',this)">Goals</div>
+</div>
+
+<div class="content">
+
+  <!-- ── DASHBOARD TAB ── -->
+  <div id="tab-dashboard" class="tab-panel active">
+
+    <!-- KPIs -->
+    <div class="kpi-grid" id="kpiGrid"></div>
+
+    <!-- Row 1: Monthly Trend + Lead Source -->
+    <div class="charts-row row-2-1">
+      <div class="chart-card">
+        <div class="chart-title">Meetings — Scheduled vs. Happened by Month</div>
+        <div class="chart-wrap" style="height:230px"><canvas id="cMonthly"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Lead Source Breakdown</div>
+        <div class="chart-wrap" style="height:230px"><canvas id="cLeadSrc"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Row 2: BDR Performance + Funnel -->
+    <div class="charts-row row-2-1">
+      <div class="chart-card">
+        <div class="chart-title">BDR Performance — Scheduled / Happened / Pipeline</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="cBDR"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Conversion Funnel</div>
+        <div id="funnel" class="funnel" style="height:220px;justify-content:center"></div>
+      </div>
+    </div>
+
+    <!-- Row 3: Pipeline by Quarter + Vertical + Stage -->
+    <div class="charts-row row-3">
+      <div class="chart-card">
+        <div class="chart-title">Pipeline Value by Quarter ($)</div>
+        <div class="chart-wrap" style="height:190px"><canvas id="cPipeQ"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Meetings by Vertical</div>
+        <div class="chart-wrap" style="height:190px"><canvas id="cVert"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Pipeline Stage Distribution</div>
+        <div class="chart-wrap" style="height:190px"><canvas id="cStage"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Export -->
+    <div class="export-bar">
+      <button class="btn btn-outline" onclick="exportPDF()">Export PDF</button>
+      <button class="btn btn-primary" onclick="exportPPT()">Export PPT</button>
+    </div>
+  </div>
+
+  <!-- ── GOALS TAB ── -->
+  <div id="tab-goals" class="tab-panel">
+    <p class="goals-note">Set quarterly targets below. These are stored in your browser and never overwritten by Excel syncs.</p>
+    <div class="goals-grid">
+      <div class="goal-card">
+        <div class="goal-q">Q1 2026</div>
+        <div class="goal-field"><label>Meetings Scheduled</label><input type="number" id="g-q1-sched" placeholder="e.g. 40"></div>
+        <div class="goal-field"><label>Meetings Happened</label><input type="number" id="g-q1-hap" placeholder="e.g. 30"></div>
+        <div class="goal-field"><label>Pipeline Generated ($)</label><input type="number" id="g-q1-pipe" placeholder="e.g. 500000"></div>
+        <div class="goal-field"><label>Revenue Closed ($)</label><input type="number" id="g-q1-close" placeholder="e.g. 200000"></div>
+      </div>
+      <div class="goal-card">
+        <div class="goal-q">Q2 2026</div>
+        <div class="goal-field"><label>Meetings Scheduled</label><input type="number" id="g-q2-sched" placeholder="e.g. 40"></div>
+        <div class="goal-field"><label>Meetings Happened</label><input type="number" id="g-q2-hap" placeholder="e.g. 30"></div>
+        <div class="goal-field"><label>Pipeline Generated ($)</label><input type="number" id="g-q2-pipe" placeholder="e.g. 500000"></div>
+        <div class="goal-field"><label>Revenue Closed ($)</label><input type="number" id="g-q2-close" placeholder="e.g. 200000"></div>
+      </div>
+      <div class="goal-card">
+        <div class="goal-q">Q3 2026</div>
+        <div class="goal-field"><label>Meetings Scheduled</label><input type="number" id="g-q3-sched" placeholder="e.g. 40"></div>
+        <div class="goal-field"><label>Meetings Happened</label><input type="number" id="g-q3-hap" placeholder="e.g. 30"></div>
+        <div class="goal-field"><label>Pipeline Generated ($)</label><input type="number" id="g-q3-pipe" placeholder="e.g. 500000"></div>
+        <div class="goal-field"><label>Revenue Closed ($)</label><input type="number" id="g-q3-close" placeholder="e.g. 200000"></div>
+      </div>
+      <div class="goal-card">
+        <div class="goal-q">Q4 2026</div>
+        <div class="goal-field"><label>Meetings Scheduled</label><input type="number" id="g-q4-sched" placeholder="e.g. 40"></div>
+        <div class="goal-field"><label>Meetings Happened</label><input type="number" id="g-q4-hap" placeholder="e.g. 30"></div>
+        <div class="goal-field"><label>Pipeline Generated ($)</label><input type="number" id="g-q4-pipe" placeholder="e.g. 500000"></div>
+        <div class="goal-field"><label>Revenue Closed ($)</label><input type="number" id="g-q4-close" placeholder="e.g. 200000"></div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="saveGoals()">Save Goals</button>
+    <span class="saved-msg" id="savedMsg">✓ Saved</span>
+  </div>
+
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────
+const DATA_URL = 'data.json';
+
+const BRAND = {
+  blue:   '#0088FF',
+  cyan:   '#00D5E2',
+  green:  '#6BEEA9',
+  orange: '#FFC27A',
+  red:    '#FF4D6B',
+  purple: '#702FFF',
+  text2:  '#DCDFED',
+  grid:   'rgba(255,255,255,0.06)',
+};
+
+const PALETTE = [BRAND.blue, BRAND.cyan, BRAND.green, BRAND.orange, BRAND.red, BRAND.purple, '#FFD248', '#00C466'];
+
+// ── STATE ────────────────────────────────────────────────────
+let allRows = [], filteredRows = [], goals = {}, _charts = {};
+
+// ── BOOT ────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  loadGoals();
+  populateGoalInputs();
+  fetchData();
+});
+
+async function fetchData() {
+  try {
+    const r = await fetch(DATA_URL + '?_=' + Date.now());
+    if (!r.ok) throw new Error(r.status);
+    const json = await r.json();
+    allRows = (json.rows || []).filter(r => r && Object.values(r).some(v => v !== '' && v != null));
+    const ts = json.lastUpdated ? new Date(json.lastUpdated).toLocaleString('en-US', { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' }) : null;
+    document.getElementById('lastUpdated').textContent = ts ? 'Synced ' + ts : 'Data loaded';
+    buildFilterOptions();
+    applyFilters();
+  } catch {
+    document.getElementById('lastUpdated').textContent = 'No data yet — run Office Script to sync';
+    document.getElementById('kpiGrid').innerHTML = `<div style="grid-column:1/-1" class="empty"><strong>No data loaded</strong>Run the Office Script in your Excel sheet to push data here.</div>`;
+  }
+}
+
+// ── HELPERS ──────────────────────────────────────────────────
+const truthy = v => {
+  if (v === true || v === 1) return true;
+  if (!v) return false;
+  return ['true','yes','y','x','1'].includes(String(v).trim().toLowerCase());
+};
+
+const toNum = v => {
+  const n = parseFloat(String(v ?? '').replace(/[$,]/g, ''));
+  return isNaN(n) ? 0 : n;
+};
+
+const fmtDollar = n => n >= 1e6 ? '$' + (n/1e6).toFixed(1) + 'M' : n >= 1e3 ? '$' + (n/1e3).toFixed(0) + 'K' : '$' + n.toFixed(0);
+const fmtNum   = n => n.toLocaleString();
+const pct      = (a, b) => b ? Math.round(a / b * 100) : 0;
+
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function normMonth(v) {
+  if (!v) return null;
+  const s = String(v).trim();
+  const idx = MONTHS.findIndex(m => s.toLowerCase().startsWith(m.toLowerCase()));
+  if (idx >= 0) return MONTHS[idx];
+  const n = parseInt(s);
+  if (n >= 1 && n <= 12) return MONTHS[n - 1];
+  return null;
+}
+
+// ── FILTERS ──────────────────────────────────────────────────
+function buildFilterOptions() {
+  const bdrs  = [...new Set(allRows.map(r => r['BDR Generator']).filter(Boolean))].sort();
+  const verts = [...new Set(allRows.map(r => r['Vertical']).filter(Boolean))].sort();
+  const addOpts = (id, arr) => {
+    const sel = document.getElementById(id);
+    arr.forEach(v => { const o = document.createElement('option'); o.value = o.textContent = v; sel.appendChild(o); });
+  };
+  addOpts('fBDR', bdrs);
+  addOpts('fVert', verts);
+}
+
+function applyFilters() {
+  const q    = document.getElementById('fQ').value;
+  const bdr  = document.getElementById('fBDR').value;
+  const vert = document.getElementById('fVert').value;
+
+  filteredRows = allRows.filter(r => {
+    if (q !== 'all') {
+      const cols = ['Schedule (Q)','Happened (Q)','Pipe (Q)','Close (Q)'];
+      if (!cols.some(c => String(r[c] || '').includes(q))) return false;
+    }
+    if (bdr  !== 'all' && r['BDR Generator'] !== bdr)  return false;
+    if (vert !== 'all' && r['Vertical']       !== vert) return false;
+    return true;
+  });
+
+  renderAll();
+}
+
+// ── RENDER ───────────────────────────────────────────────────
+function renderAll() {
+  renderKPIs();
+  renderMonthly();
+  renderLeadSrc();
+  renderBDR();
+  renderFunnel();
+  renderPipeQ();
+  renderVert();
+  renderStage();
+}
+
+// ── KPIs ─────────────────────────────────────────────────────
+function renderKPIs() {
+  const rows = filteredRows;
+  const q    = document.getElementById('fQ').value;
+  const qk   = q === 'all' ? null : 'q' + q;
+
+  const scheduled = rows.filter(r => r['Scheduled'] || r['Schedule (M)']).length;
+  const happened  = rows.filter(r => truthy(r['Mtg. Happened'])).length;
+  const inPipe    = rows.filter(r => truthy(r['Entered the Pipe']) || truthy(r['PipelineGen'])).length;
+  const pipeVal   = rows.filter(r => truthy(r['Entered the Pipe']) || truthy(r['PipelineGen'])).reduce((s, r) => s + toNum(r['Deal Amount']), 0);
+  const closed    = rows.filter(r => r['Close Date'] && String(r['Close Date']).trim()).length;
+  const closedVal = rows.filter(r => r['Close Date'] && String(r['Close Date']).trim()).reduce((s, r) => s + toNum(r['Deal Amount']), 0);
+  const avgCycle  = (() => { const cs = rows.map(r => toNum(r['Sales Cycle Length'])).filter(n => n > 0); return cs.length ? Math.round(cs.reduce((a,b) => a+b,0)/cs.length) : 0; })();
+  const showRate  = pct(happened, scheduled);
+
+  const gSum = m => ['q1','q2','q3','q4'].reduce((s, q) => s + (goals[q]?.[m] || 0), 0);
+  const gVal = (m) => qk ? (goals[qk]?.[m] || 0) : gSum(m);
+
+  const kpis = [
+    { label:'Meetings Scheduled', val:fmtNum(scheduled), color:'blue',   goal:gVal('sched'), actual:scheduled, fmt:'n'  },
+    { label:'Meetings Happened',  val:fmtNum(happened),  color:'cyan',   goal:gVal('hap'),   actual:happened,  fmt:'n', sub:showRate+'% show rate' },
+    { label:'Pipeline Generated', val:fmtDollar(pipeVal),color:'green',  goal:gVal('pipe'),  actual:pipeVal,   fmt:'$'  },
+    { label:'Revenue Closed',     val:fmtDollar(closedVal),color:'orange',goal:gVal('close'),actual:closedVal, fmt:'$'  },
+    { label:'Avg Sales Cycle',    val:avgCycle+'d',      color:'purple', noGoal:true, sub: pct(inPipe,happened)+'% happen → pipe' },
+  ];
+
+  document.getElementById('kpiGrid').innerHTML = kpis.map(k => {
+    const prog = k.goal ? Math.min(100, pct(k.actual, k.goal)) : 0;
+    const cls  = k.goal ? (prog >= 100 ? 'badge-green' : prog >= 70 ? 'badge-orange' : 'badge-red') : '';
+    const gTxt = k.goal ? (k.fmt === '$' ? fmtDollar(k.goal) : fmtNum(k.goal)) : '';
+    return `<div class="kpi-card ${k.color}">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${k.val}</div>
+      <div class="kpi-sub">${k.sub || '&nbsp;'}</div>
+      ${k.goal ? `<div style="margin-bottom:6px"><span class="kpi-badge ${cls}">${prog}% of ${gTxt}</span></div>` : ''}
+      ${k.goal ? `<div class="kpi-progress"><div class="kpi-bar" style="width:${prog}%;background:var(--${k.color})"></div></div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ── CHART HELPERS ────────────────────────────────────────────
+const chartOpts = (extra={}) => ({
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { labels: { color: BRAND.text2, boxWidth: 10, padding: 10, font: { family: 'Roboto', size: 11 } } } },
+  ...extra
+});
+
+const axisOpts = () => ({
+  scales: {
+    x: { ticks: { color: BRAND.text2, font:{size:11} }, grid: { color: BRAND.grid } },
+    y: { ticks: { color: BRAND.text2, font:{size:11} }, grid: { color: BRAND.grid }, beginAtZero: true }
+  }
+});
+
+function mkChart(id, type, data, opts) {
+  if (_charts[id]) _charts[id].destroy();
+  const ctx = document.getElementById(id).getContext('2d');
+  _charts[id] = new Chart(ctx, { type, data, options: opts });
+  return _charts[id];
+}
+
+// ── MONTHLY TREND ─────────────────────────────────────────────
+function renderMonthly() {
+  const byM = {};
+  MONTHS.forEach(m => byM[m] = { sched: 0, hap: 0 });
+  filteredRows.forEach(r => {
+    const sm = normMonth(r['Schedule (M)']);
+    const hm = normMonth(r['Happened (M)']);
+    if (sm && byM[sm]) byM[sm].sched++;
+    if (hm && byM[hm] && truthy(r['Mtg. Happened'])) byM[hm].hap++;
+  });
+  mkChart('cMonthly', 'bar', {
+    labels: MONTHS,
+    datasets: [
+      { label:'Scheduled', data: MONTHS.map(m => byM[m].sched), backgroundColor: BRAND.blue   + 'BB', borderRadius: 3 },
+      { label:'Happened',  data: MONTHS.map(m => byM[m].hap),   backgroundColor: BRAND.cyan   + 'BB', borderRadius: 3 },
+    ]
+  }, { ...chartOpts(), ...axisOpts() });
+}
+
+// ── LEAD SOURCE ───────────────────────────────────────────────
+function renderLeadSrc() {
+  const counts = {};
+  filteredRows.forEach(r => { const s = String(r['Lead Source']||'').trim(); if (s) counts[s] = (counts[s]||0)+1; });
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  if (!sorted.length) { if(_charts.cLeadSrc) _charts.cLeadSrc.destroy(); return; }
+  mkChart('cLeadSrc', 'doughnut', {
+    labels: sorted.map(([k])=>k),
+    datasets: [{ data: sorted.map(([,v])=>v), backgroundColor: PALETTE, borderWidth: 0, hoverOffset: 4 }]
+  }, chartOpts({ plugins: { legend: { position:'right', labels: { color: BRAND.text2, boxWidth:9, padding:8, font:{family:'Roboto',size:10} } } } }));
+}
+
+// ── BDR PERFORMANCE ───────────────────────────────────────────
+function renderBDR() {
+  const d = {};
+  filteredRows.forEach(r => {
+    const n = String(r['BDR Generator']||'').trim(); if (!n) return;
+    if (!d[n]) d[n] = { s:0, h:0, p:0 };
+    if (r['Scheduled'] || r['Schedule (M)']) d[n].s++;
+    if (truthy(r['Mtg. Happened'])) d[n].h++;
+    if (truthy(r['Entered the Pipe']) || truthy(r['PipelineGen'])) d[n].p++;
+  });
+  const sorted = Object.entries(d).sort((a,b)=>b[1].s-a[1].s);
+  if (!sorted.length) { if(_charts.cBDR) _charts.cBDR.destroy(); return; }
+  mkChart('cBDR', 'bar', {
+    labels: sorted.map(([k])=>k),
+    datasets: [
+      { label:'Scheduled', data: sorted.map(([,v])=>v.s), backgroundColor: BRAND.blue  +'BB', borderRadius:3 },
+      { label:'Happened',  data: sorted.map(([,v])=>v.h), backgroundColor: BRAND.cyan  +'BB', borderRadius:3 },
+      { label:'Pipeline',  data: sorted.map(([,v])=>v.p), backgroundColor: BRAND.green +'BB', borderRadius:3 },
+    ]
+  }, { ...chartOpts(), indexAxis:'y', ...axisOpts() });
+}
+
+// ── FUNNEL ────────────────────────────────────────────────────
+function renderFunnel() {
+  const rows = filteredRows;
+  const sched = rows.filter(r => r['Scheduled'] || r['Schedule (M)']).length;
+  const hap   = rows.filter(r => truthy(r['Mtg. Happened'])).length;
+  const pipe  = rows.filter(r => truthy(r['Entered the Pipe']) || truthy(r['PipelineGen'])).length;
+  const close = rows.filter(r => r['Close Date'] && String(r['Close Date']).trim()).length;
+  const max   = sched || 1;
+
+  const stages = [
+    { lbl:'Scheduled', n:sched, color:BRAND.blue   },
+    { lbl:'Happened',  n:hap,   color:BRAND.cyan   },
+    { lbl:'In Pipeline',n:pipe, color:BRAND.green  },
+    { lbl:'Closed',    n:close, color:BRAND.orange },
+  ];
+
+  document.getElementById('funnel').innerHTML = stages.map((s,i) => {
+    const w = Math.round(s.n / max * 100);
+    const conv = i > 0 ? pct(s.n, stages[i-1].n) + '%' : '';
+    return `<div class="funnel-row">
+      <div class="funnel-lbl">${s.lbl}</div>
+      <div class="funnel-track"><div class="funnel-fill" style="width:${w}%;background:${s.color}">${fmtNum(s.n)}</div></div>
+      <div class="funnel-pct">${conv}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── PIPELINE BY QUARTER ───────────────────────────────────────
+function renderPipeQ() {
+  const vals = { '1':0, '2':0, '3':0, '4':0 };
+  filteredRows.forEach(r => {
+    const q = String(r['Pipe (Q)']||'');
+    const amt = toNum(r['Deal Amount']);
+    if (!amt) return;
+    ['1','2','3','4'].forEach(n => { if (q.includes(n)) vals[n] += amt; });
+  });
+  mkChart('cPipeQ', 'bar', {
+    labels: ['Q1','Q2','Q3','Q4'],
+    datasets: [{ label:'Pipeline ($)', data: ['1','2','3','4'].map(n=>vals[n]), backgroundColor: PALETTE, borderRadius:5 }]
+  }, { ...chartOpts({ plugins:{ legend:{ display:false } } }), scales: {
+    x: { ticks:{ color:BRAND.text2, font:{size:11} }, grid:{ display:false } },
+    y: { ticks:{ color:BRAND.text2, font:{size:11}, callback:v=>fmtDollar(v) }, grid:{ color:BRAND.grid }, beginAtZero:true }
+  }});
+}
+
+// ── VERTICAL ─────────────────────────────────────────────────
+function renderVert() {
+  const counts = {};
+  filteredRows.forEach(r => { const v = String(r['Vertical']||'').trim(); if (v) counts[v] = (counts[v]||0)+1; });
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  if (!sorted.length) { if(_charts.cVert) _charts.cVert.destroy(); return; }
+  mkChart('cVert', 'bar', {
+    labels: sorted.map(([k])=>k),
+    datasets: [{ data:sorted.map(([,v])=>v), backgroundColor: PALETTE.map(c=>c+'BB'), borderRadius:3 }]
+  }, { ...chartOpts({ plugins:{ legend:{ display:false } } }), scales: {
+    x: { ticks:{ color:BRAND.text2, font:{size:10}, maxRotation:30 }, grid:{ display:false } },
+    y: { ticks:{ color:BRAND.text2, font:{size:11} }, grid:{ color:BRAND.grid }, beginAtZero:true }
+  }});
+}
+
+// ── PIPELINE STAGE ────────────────────────────────────────────
+function renderStage() {
+  const d = {};
+  filteredRows.forEach(r => {
+    const s = String(r['Pipeline Stage']||'').trim(); if (!s) return;
+    if (!d[s]) d[s] = 0;
+    d[s] += toNum(r['Deal Amount']) || 1;
+  });
+  const sorted = Object.entries(d).sort((a,b)=>b[1]-a[1]);
+  if (!sorted.length) { if(_charts.cStage) _charts.cStage.destroy(); return; }
+  mkChart('cStage', 'doughnut', {
+    labels: sorted.map(([k])=>k),
+    datasets: [{ data:sorted.map(([,v])=>v), backgroundColor:PALETTE, borderWidth:0, hoverOffset:4 }]
+  }, { ...chartOpts({ plugins:{ legend:{ position:'right', labels:{ color:BRAND.text2, boxWidth:9, padding:8, font:{family:'Roboto',size:10} } }, tooltip:{ callbacks:{ label: c => ` ${c.label}: ${fmtDollar(c.raw)}` } } } }) });
+}
+
+// ── GOALS ─────────────────────────────────────────────────────
+function loadGoals() {
+  try { goals = JSON.parse(localStorage.getItem('sz-revops-goals')||'{}'); } catch { goals = {}; }
+}
+
+function populateGoalInputs() {
+  ['q1','q2','q3','q4'].forEach(q => {
+    ['sched','hap','pipe','close'].forEach(m => {
+      const el = document.getElementById(`g-${q}-${m}`);
+      if (el && goals[q]?.[m]) el.value = goals[q][m];
+    });
+  });
+}
+
+function saveGoals() {
+  ['q1','q2','q3','q4'].forEach(q => {
+    goals[q] = {};
+    ['sched','hap','pipe','close'].forEach(m => {
+      const el = document.getElementById(`g-${q}-${m}`);
+      goals[q][m] = el ? toNum(el.value) : 0;
+    });
+  });
+  localStorage.setItem('sz-revops-goals', JSON.stringify(goals));
+  const msg = document.getElementById('savedMsg');
+  msg.style.display = 'inline';
+  setTimeout(() => msg.style.display = 'none', 2000);
+  renderKPIs();
+}
+
+// ── TABS ──────────────────────────────────────────────────────
+function switchTab(name, el) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+// ── EXPORT ───────────────────────────────────────────────────
+function exportPDF() { window.print(); }
+
+function exportPPT() {
+  alert('PPT export will be enabled once your .potx template placeholders are configured. Drop the updated template to activate this button.');
+}
+</script>
+</body>
+</html>
