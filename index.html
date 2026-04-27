@@ -132,27 +132,57 @@
     .btn-add-goal { background:var(--bdim); color:var(--blue); border:1px dashed rgba(0,136,255,.35); padding:8px 16px; border-radius:7px; font-size:12px; cursor:pointer; transition:all .15s; font-family:'Roboto',sans-serif; }
     .btn-add-goal:hover { background:rgba(0,136,255,.18); border-color:var(--blue); }
 
-    /* GOALS */
-    .goals-quarter-section { margin-bottom:28px; }
-    .goals-q-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--brd); }
-    .goals-q-label { font-size:14px; font-weight:500; color:var(--blue); }
-    .goals-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; }
-    .goal-card { background:var(--sur); border:1px solid var(--brd); border-radius:var(--r); padding:18px; transition:border-color .15s; }
-    .goal-card:hover { border-color:rgba(0,136,255,.28); }
-    .goal-card-top { display:flex; justify-content:flex-end; margin-bottom:12px; }
-    .gf { margin-bottom:11px; }
-    .gf:last-child { margin-bottom:0; }
-    .gf label { display:block; font-size:10px; font-weight:500; color:var(--t2); text-transform:uppercase; letter-spacing:.8px; margin-bottom:4px; }
-    .gf input,.gf select { width:100%; background:var(--sur2); border:1px solid var(--brd); color:var(--text); padding:7px 10px; border-radius:6px; font-size:13px; font-family:'Roboto',sans-serif; font-weight:300; outline:none; }
-    .gf input:focus,.gf select:focus { border-color:var(--blue); }
-    .goal-att { margin-top:12px; padding-top:12px; border-top:1px solid var(--brd); }
-    .g-att-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
-    .g-att-lbl { font-size:11px; color:var(--t2); }
-    .g-att-val { font-size:12px; font-weight:500; }
-    .g-prog { height:3px; background:var(--sur3); border-radius:2px; overflow:hidden; margin-top:6px; }
-    .g-prog-bar { height:100%; border-radius:2px; transition:width .6s ease; }
-    .goals-footer { display:flex; align-items:center; gap:12px; padding-top:16px; border-top:1px solid var(--brd); margin-top:8px; }
-    .saved-msg { font-size:11px; color:var(--green); display:none; }
+    /* WIZARD MODAL */
+    #wizardModal { position:fixed; inset:0; z-index:500; display:flex; align-items:center; justify-content:center; }
+    .wiz-overlay { position:absolute; inset:0; background:rgba(7,9,26,.88); backdrop-filter:blur(6px); }
+    .wiz-card { position:relative; z-index:1; background:var(--sur); border:1px solid var(--brd); border-radius:14px; width:100%; max-width:530px; margin:0 16px; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 24px 60px rgba(0,0,0,.5); }
+    .wiz-header { display:flex; justify-content:space-between; align-items:flex-start; padding:22px 26px 14px; border-bottom:1px solid var(--brd); }
+    .wiz-title { font-size:17px; font-weight:500; }
+    .wiz-step-lbl { font-size:11px; color:var(--t2); margin-top:3px; }
+    .wiz-close { background:none; border:none; color:var(--t2); font-size:22px; cursor:pointer; padding:0; line-height:1; transition:color .15s; }
+    .wiz-close:hover { color:var(--text); }
+    .wiz-prog { display:flex; gap:5px; padding:14px 26px 0; flex-wrap:wrap; }
+    .wiz-dot { width:20px; height:4px; border-radius:2px; background:var(--sur3); transition:all .2s; }
+    .wiz-dot.done { background:rgba(0,136,255,.4); }
+    .wiz-dot.active { background:var(--blue); width:30px; }
+    .wiz-body { flex:1; overflow-y:auto; padding:24px 26px; }
+    .wiz-footer { display:flex; justify-content:space-between; align-items:center; padding:16px 26px 22px; border-top:1px solid var(--brd); gap:12px; }
+    .wiz-q { font-size:17px; font-weight:400; line-height:1.4; margin-bottom:6px; }
+    .wiz-hint { font-size:12px; color:var(--t2); margin-bottom:2px; line-height:1.5; }
+    .wiz-badge { display:inline-block; font-size:10px; font-weight:700; padding:3px 11px; border-radius:10px; background:rgba(0,136,255,.12); color:var(--blue); letter-spacing:.8px; margin-bottom:12px; }
+    .wiz-inp { width:100%; background:var(--sur2); border:1px solid var(--brd); color:var(--text); padding:11px 14px; border-radius:8px; font-size:15px; font-family:'Roboto',sans-serif; font-weight:300; outline:none; margin-top:8px; transition:border-color .15s; }
+    .wiz-inp:focus { border-color:var(--blue); }
+    .wiz-sel { width:100%; background:var(--sur2); border:1px solid var(--brd); color:var(--text); padding:11px 14px; border-radius:8px; font-size:14px; font-family:'Roboto',sans-serif; font-weight:300; outline:none; cursor:pointer; margin-top:8px; transition:border-color .15s; }
+    .wiz-sel:focus { border-color:var(--blue); }
+    .wiz-date { width:100%; background:var(--sur2); border:1px solid var(--brd); color:var(--text); padding:11px 14px; border-radius:8px; font-size:14px; font-family:'Roboto',sans-serif; color-scheme:dark; outline:none; margin-top:6px; }
+    .wiz-type-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:16px; }
+    .wiz-type-btn { background:var(--sur2); border:2px solid var(--brd); border-radius:11px; padding:18px 12px; cursor:pointer; text-align:center; transition:all .15s; user-select:none; }
+    .wiz-type-btn:hover { border-color:rgba(0,136,255,.5); }
+    .wiz-type-btn.active { border-color:var(--blue); background:rgba(0,136,255,.08); }
+    .wiz-type-icon { font-size:26px; font-weight:700; color:var(--blue); margin-bottom:8px; }
+    .wiz-type-lbl { font-size:13px; font-weight:500; margin-bottom:5px; }
+    .wiz-type-desc { font-size:11px; color:var(--t2); margin-bottom:5px; line-height:1.4; }
+    .wiz-type-eg { font-size:10px; color:var(--t2); font-style:italic; }
+    .wiz-err { font-size:12px; color:var(--red); }
+    /* GOAL V4 CARDS */
+    .gv4-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:16px; }
+    .gv4-card { background:var(--sur); border:1px solid var(--brd); border-radius:var(--r); padding:20px; position:relative; overflow:hidden; transition:border-color .2s; }
+    .gv4-card:hover { border-color:rgba(0,136,255,.3); }
+    .gv4-accent { position:absolute; top:0; left:0; right:0; height:3px; }
+    .gv4-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .gv4-type { font-size:9px; font-weight:700; padding:3px 9px; border-radius:9px; letter-spacing:.8px; }
+    .gv4-type.ct { background:rgba(0,136,255,.12); color:var(--blue); }
+    .gv4-type.rt { background:rgba(0,213,226,.12); color:var(--cyan); }
+    .gv4-type.sm { background:rgba(107,238,169,.12); color:var(--green); }
+    .gv4-name { font-size:15px; font-weight:500; margin-bottom:5px; line-height:1.3; }
+    .gv4-summary { font-size:11px; color:var(--t2); margin-bottom:14px; line-height:1.6; }
+    .gv4-nums { display:flex; justify-content:space-around; margin-bottom:10px; }
+    .gv4-num { text-align:center; }
+    .gv4-nv { font-size:21px; font-weight:700; line-height:1; }
+    .gv4-nl { font-size:9px; color:var(--t2); margin-top:3px; text-transform:uppercase; letter-spacing:.7px; }
+    .gv4-bar-wrap { height:5px; background:var(--sur3); border-radius:3px; overflow:hidden; margin-bottom:12px; }
+    .gv4-bar { height:100%; border-radius:3px; transition:width .7s cubic-bezier(.4,0,.2,1); }
+    .gv4-actions { display:flex; gap:6px; justify-content:flex-end; }
 
     /* GOAL TRACKER */
     .gt-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
@@ -324,16 +354,33 @@
 
   <!-- ══ GOALS TAB ══ -->
   <div id="tab-goals" class="tab-panel">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px">
       <div>
-        <h2 style="font-size:18px;font-weight:500">Quarterly Goals</h2>
-        <p style="font-size:12px;color:var(--t2);margin-top:4px">Goals are stored in your browser, never overwritten by Excel. Name goals to match column names for auto-tracking.</p>
+        <h2 style="font-size:18px;font-weight:500">Goals</h2>
+        <p style="font-size:12px;color:var(--t2);margin-top:4px">Stored in your browser. Use the wizard to build any calculation.</p>
       </div>
+      <button class="btn btn-p" onclick="openWizard()">+ Add Goal</button>
     </div>
-    <div id="goalsContent"></div>
-    <div class="goals-footer">
-      <button class="btn btn-p" onclick="saveGoals()">Save All Goals</button>
-      <span class="saved-msg" id="savedMsg">✓ Saved</span>
+    <div id="gv4Grid" class="gv4-grid"></div>
+
+    <!-- WIZARD MODAL -->
+    <div id="wizardModal" style="display:none">
+      <div class="wiz-overlay" onclick="closeWizard()"></div>
+      <div class="wiz-card">
+        <div class="wiz-header">
+          <div><div class="wiz-title" id="wizTitle">Add Goal</div><div class="wiz-step-lbl" id="wizStepLbl"></div></div>
+          <button class="wiz-close" onclick="closeWizard()">×</button>
+        </div>
+        <div class="wiz-prog" id="wizProg"></div>
+        <div class="wiz-body" id="wizBody"></div>
+        <div class="wiz-footer">
+          <button class="btn btn-o" id="wizBackBtn" onclick="wizardBack()">Cancel</button>
+          <div style="display:flex;gap:10px;align-items:center">
+            <span id="wizErr" class="wiz-err" style="display:none"></span>
+            <button class="btn btn-p" id="wizNextBtn" onclick="wizardNext()">Next →</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -362,19 +409,6 @@ const C = {
 };
 const PAL = [C.blue,C.cyan,C.green,C.orange,C.red,C.purple,'#FFD248','#00C466','#158DFF','#FF8C42'];
 
-// Trackable column definitions for goals
-const TRACK_COLS = [
-  {label:'Meetings Scheduled',  key:'scheduled', fmt:'n'},
-  {label:'Meetings Happened',   key:'happened',  fmt:'n'},
-  {label:'Meetings Accepted',   key:'accepted',  fmt:'n'},
-  {label:'Entered Pipeline',    key:'pipe_cnt',  fmt:'n'},
-  {label:'Pipeline Value ($)',  key:'pipe_val',  fmt:'$'},
-  {label:'Deals Closed',        key:'close_cnt', fmt:'n'},
-  {label:'Revenue Closed ($)',  key:'close_val', fmt:'$'},
-  {label:'Total Reschedules',   key:'reschedules',fmt:'n'},
-];
-
-const QUARTERS = ['Q1','Q2','Q3','Q4'];
 const MONTHS   = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 // ─── STATE ───────────────────────────────────────
@@ -586,30 +620,20 @@ function renderAll(){ renderKPIs();renderMonthly();renderLeadType();renderBDR();
 // ─── KPIs ────────────────────────────────────────
 function renderKPIs(){
   const m=metrics(filteredRows);
-  const q=document.getElementById('fQ').value;
-  const qk=q==='all'?null:'q'+q;
-  const goalFor=key=>goals.filter(g=>g.col===key&&(!qk||!g.quarter||g.quarter===qk||g.quarter==='annual')).reduce((s,g)=>s+toNum(g.target),0);
   const sr=pct(m.happened,m.scheduled);
   const hp=pct(m.pipe_cnt,m.happened);
   const kpis=[
-    {l:'Meetings Scheduled',v:fmtN(m.scheduled),c:'blue',  goal:goalFor('scheduled'), actual:m.scheduled, fmt:'n'},
-    {l:'Meetings Happened', v:fmtN(m.happened), c:'cyan',  goal:goalFor('happened'),  actual:m.happened,  fmt:'n', sub:sr+'% show rate'},
-    {l:'Pipeline Generated',v:fmtD(m.pipe_val), c:'green', goal:goalFor('pipe_val'),  actual:m.pipe_val,  fmt:'$'},
-    {l:'Revenue Closed',    v:fmtD(m.close_val),c:'orange',goal:goalFor('close_val'), actual:m.close_val, fmt:'$'},
-    {l:'Avg Sales Cycle',   v:m.avg_cycle+'d',  c:'purple',noGoal:true, sub:hp+'% happen→pipe'},
+    {l:'Meetings Scheduled',v:fmtN(m.scheduled),c:'blue'},
+    {l:'Meetings Happened', v:fmtN(m.happened), c:'cyan',  sub:sr+'% show rate'},
+    {l:'Pipeline Generated',v:fmtD(m.pipe_val), c:'green'},
+    {l:'Revenue Closed',    v:fmtD(m.close_val),c:'orange'},
+    {l:'Avg Sales Cycle',   v:m.avg_cycle+'d',  c:'purple',sub:hp+'% happen→pipe'},
   ];
-  document.getElementById('kpiGrid').innerHTML=kpis.map(k=>{
-    const pr=k.goal?Math.min(100,pct(k.actual,k.goal)):0;
-    const bc=k.goal?(pr>=100?'bg':pr>=70?'bo':'br'):'';
-    const gt=k.goal?(k.fmt==='$'?fmtD(k.goal):fmtN(k.goal)):'';
-    return `<div class="kpi-card ${k.c}">
-      <div class="kpi-label">${k.l}</div>
-      <div class="kpi-value">${k.v}</div>
-      <div class="kpi-sub">${k.sub||'&nbsp;'}</div>
-      ${k.goal?`<span class="kpi-badge ${bc}">${pr}% of ${gt}</span>`:''}
-      ${k.goal?`<div class="kpi-prog"><div class="kpi-bar" style="width:${pr}%;background:var(--${k.c})"></div></div>`:''}
-    </div>`;
-  }).join('');
+  document.getElementById('kpiGrid').innerHTML=kpis.map(k=>`<div class="kpi-card ${k.c}">
+    <div class="kpi-label">${k.l}</div>
+    <div class="kpi-value">${k.v}</div>
+    <div class="kpi-sub">${k.sub||'&nbsp;'}</div>
+  </div>`).join('');
 }
 
 // ─── CHART HELPERS ────────────────────────────────
@@ -874,135 +898,497 @@ function renderGoalTracker(){
     <div class="gt-summary-stat"><div class="gt-summary-val" style="color:var(--t2)">${total}</div><div class="gt-summary-lbl">Total Goals</div></div>`;
 }
 
-// ─── GOALS ───────────────────────────────────────
-function loadGoals(){ try{goals=JSON.parse(localStorage.getItem('sz-revops-goals-v3')||'[]');}catch{goals=[];} if(!Array.isArray(goals))goals=[]; }
+// ─── GOALS v4 ────────────────────────────────────
+function loadGoals(){ try{goals=JSON.parse(localStorage.getItem('sz-goals-v4')||'[]');}catch{goals=[];} if(!Array.isArray(goals))goals=[]; }
+function persistGoals(){ localStorage.setItem('sz-goals-v4',JSON.stringify(goals)); }
 
-function saveGoals(){
-  goals=goals.map((g,i)=>({
-    name:      document.getElementById(`gn-${i}`)?.value||g.name,
-    col:       document.getElementById(`gc-${i}`)?.value||g.col,
-    rawCol:    (document.getElementById(`gr-${i}`)?.value||'').trim(),
-    matchVal:  (document.getElementById(`gm-${i}`)?.value||'').trim(),
-    formula:   (document.getElementById(`gf-${i}`)?.value||'').trim(),
-    fmt:       document.getElementById(`gfmt-${i}`)?.value||g.fmt||'n',
-    target:    toNum(document.getElementById(`gt-${i}`)?.value),
-    quarter:   document.getElementById(`gq-${i}`)?.value||g.quarter,
-    startDate: document.getElementById(`gsd-${i}`)?.value||'',
-    endDate:   document.getElementById(`ged-${i}`)?.value||'',
-  }));
-  localStorage.setItem('sz-revops-goals-v3',JSON.stringify(goals));
-  const msg=document.getElementById('savedMsg'); msg.style.display='inline'; setTimeout(()=>msg.style.display='none',2500);
-  renderGoalsTab(); renderKPIs();
-}
-
-function addGoalForQuarter(quarter){
-  saveGoals();
-  goals.push({name:'New Goal',col:'scheduled',rawCol:'',matchVal:'',formula:'',fmt:'n',target:0,quarter,startDate:'',endDate:''});
-  localStorage.setItem('sz-revops-goals-v3',JSON.stringify(goals));
-  renderGoalsTab();
-  setTimeout(()=>{
-    const cards=document.querySelectorAll(`[data-q="${quarter}"] .goal-card`);
-    cards[cards.length-1]?.scrollIntoView({behavior:'smooth',block:'nearest'});
-  },60);
-}
-
-function removeGoal(i){ saveGoals(); goals.splice(i,1); localStorage.setItem('sz-revops-goals-v3',JSON.stringify(goals)); renderGoalsTab(); renderKPIs(); }
-
-function evalFormula(expr,m){
-  // Substitute known metric keys with their values
-  let e=expr;
-  Object.keys(m).forEach(k=>{ e=e.replace(new RegExp('\\b'+k+'\\b','g'),m[k]); });
-  try{ const r=Function('"use strict";return ('+e+')')(); return isFinite(r)?Math.round(r*100)/100:0; }
-  catch{ return 0; }
-}
-
-function actualFor(colKey,quarter,rawCol,matchVal,formula,startDate,endDate){
-  let rows=allRows;
-  if(quarter&&quarter.startsWith('q')){const qn=quarter.replace('q','');rows=allRows.filter(r=>{const qs=['Schedule (Q)','Happened (Q)','Pipe (Q)','Close (Q)'];return qs.some(c=>String(r[c]||'').includes(qn));});}
-  if(startDate||endDate) rows=applyDateRange(rows,startDate,endDate);
-  if(formula) return evalFormula(formula,metrics(rows));
-  if(rawCol){
-    return rows.filter(r=>{
-      const v=String(r[rawCol]??'').trim();
-      if(!matchVal) return v!==''&&v.toLowerCase()!=='no'&&v.toLowerCase()!=='n'&&v!=='0'&&v.toLowerCase()!=='false';
-      return v.toLowerCase()===matchVal.toLowerCase();
-    }).length;
-  }
-  return metrics(rows)[colKey]??0;
-}
-
-function renderGoalsTab(){
-  const sections=[...QUARTERS.map(q=>q.toLowerCase()),'annual'];
-  const labels={q1:'Q1 2026',q2:'Q2 2026',q3:'Q3 2026',q4:'Q4 2026',annual:'Annual'};
-  const colSel=(sel)=>TRACK_COLS.map(c=>`<option value="${c.key}"${c.key===sel?' selected':''}>${c.label}</option>`).join('');
-  const qSel=(sel)=>sections.map(s=>`<option value="${s}"${s===sel?' selected':''}>${labels[s]||s}</option>`).join('');
-  const fmtSel=(sel)=>[['n','Count (#)'],['%','Percent (%)'],['$','Dollar ($)']].map(([v,l])=>`<option value="${v}"${v===(sel||'n')?' selected':''}>${l}</option>`).join('');
-  const fmtFn=(fmt,v)=>fmt==='$'?fmtD(v):fmt==='%'?(Math.round(v*10)/10)+'%':fmtN(v);
-  const METRIC_KEYS='scheduled, happened, pipe_cnt, pipe_val, close_cnt, close_val, reschedules';
-
-  let html='';
-  sections.forEach(qk=>{
-    const qGoals=goals.map((g,i)=>({...g,i})).filter(g=>g.quarter===qk);
-    html+=`<div class="goals-quarter-section" data-q="${qk}">
-      <div class="goals-q-hdr">
-        <div class="goals-q-label">${labels[qk]||qk}</div>
-        <button class="btn-add-goal" onclick="addGoalForQuarter('${qk}')">+ Add ${labels[qk]||qk} Goal</button>
-      </div>
-      <div class="goals-grid">`;
-
-    if(!qGoals.length){
-      html+=`<div style="color:var(--t2);font-size:12px;padding:10px 0">No goals yet for ${labels[qk]||qk}. Click "+ Add ${labels[qk]||qk} Goal" above.</div>`;
-    } else {
-      qGoals.forEach(g=>{
-        const i=g.i;
-        const fmt=g.fmt||'n';
-        const actual=actualFor(g.col,qk,g.rawCol||'',g.matchVal||'',g.formula||'',g.startDate||'',g.endDate||'');
-        const target=toNum(g.target);
-        const pr=target?Math.min(100,pct(actual,target)):0;
-        const clr=pr>=100?'var(--green)':pr>=70?'var(--orange)':'var(--red)';
-        const modeLabel=g.formula?'formula':g.rawCol?'column':'metric';
-        html+=`<div class="goal-card">
-          <div class="goal-card-top"><button class="btn btn-del" onclick="removeGoal(${i})">✕</button></div>
-          <div class="gf"><label>Goal Name</label><input id="gn-${i}" type="text" value="${g.name||''}" placeholder="e.g. Q1 Show Rate Target"></div>
-          <div class="gf"><label>Period</label><select id="gq-${i}">${qSel(g.quarter)}</select></div>
-          <div style="border-top:1px solid var(--brd);margin:10px 0 10px;"></div>
-          <div style="font-size:10px;font-weight:500;color:var(--blue);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">What to Measure <span style="color:var(--t2);font-weight:300;text-transform:none;letter-spacing:0">(fill one section)</span></div>
-          <div style="background:var(--sur2);border-radius:7px;padding:10px;margin-bottom:8px;border:1px solid ${modeLabel==='metric'?'rgba(0,136,255,.3)':'var(--brd)'}">
-            <div style="font-size:10px;color:var(--t2);margin-bottom:6px;font-weight:500">① Predefined Metric</div>
-            <select id="gc-${i}" style="width:100%;background:var(--sur3);border:1px solid var(--brd);color:var(--t3);padding:6px 8px;border-radius:5px;font-size:12px;font-family:Roboto,sans-serif">${colSel(g.col)}</select>
-          </div>
-          <div style="background:var(--sur2);border-radius:7px;padding:10px;margin-bottom:8px;border:1px solid ${modeLabel==='column'?'rgba(0,136,255,.3)':'var(--brd)'}">
-            <div style="font-size:10px;color:var(--t2);margin-bottom:6px;font-weight:500">② Column + Value Match</div>
-            <div class="gf" style="margin-bottom:6px"><label>Excel Column Name</label><input id="gr-${i}" type="text" value="${g.rawCol||''}" placeholder="e.g. Entered the Pipeline"></div>
-            <div class="gf"><label>Count Rows Where Value Equals</label><input id="gm-${i}" type="text" value="${g.matchVal||''}" placeholder="e.g. Y  (leave blank = any value)"></div>
-          </div>
-          <div style="background:var(--sur2);border-radius:7px;padding:10px;margin-bottom:10px;border:1px solid ${modeLabel==='formula'?'rgba(0,136,255,.3)':'var(--brd)'}">
-            <div style="font-size:10px;color:var(--t2);margin-bottom:6px;font-weight:500">③ Formula</div>
-            <div class="gf"><label>Expression <span style="color:var(--t2);font-weight:300">(e.g. happened / scheduled * 100)</span></label><input id="gf-${i}" type="text" value="${g.formula||''}" placeholder="happened / scheduled * 100"></div>
-            <div style="font-size:10px;color:var(--t2);margin-top:4px">Available: ${METRIC_KEYS}</div>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-            <div class="gf"><label>Target Value</label><input id="gt-${i}" type="number" value="${g.target||''}" placeholder="e.g. 75"></div>
-            <div class="gf"><label>Format</label><select id="gfmt-${i}" style="width:100%;background:var(--sur2);border:1px solid var(--brd);color:var(--t3);padding:7px 8px;border-radius:6px;font-size:12px;font-family:Roboto,sans-serif">${fmtSel(fmt)}</select></div>
-          </div>
-          <div style="border-top:1px solid var(--brd);margin:0 0 8px"></div>
-          <div style="font-size:10px;font-weight:500;color:var(--t2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">Date Range <span style="color:var(--t2);font-weight:300;text-transform:none;letter-spacing:0">(optional — filters which rows count)</span></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-            <div class="gf"><label>Start Date</label><input id="gsd-${i}" type="date" value="${g.startDate||''}" style="width:100%;background:var(--sur2);border:1px solid var(--brd);color:var(--t3);padding:7px 8px;border-radius:6px;font-size:12px;font-family:Roboto,sans-serif;color-scheme:dark;outline:none"></div>
-            <div class="gf"><label>End Date</label><input id="ged-${i}" type="date" value="${g.endDate||''}" style="width:100%;background:var(--sur2);border:1px solid var(--brd);color:var(--t3);padding:7px 8px;border-radius:6px;font-size:12px;font-family:Roboto,sans-serif;color-scheme:dark;outline:none"></div>
-          </div>
-          ${target?`<div class="goal-att">
-            <div class="g-att-row"><span class="g-att-lbl">Actual</span><span class="g-att-val">${fmtFn(fmt,actual)}</span></div>
-            <div class="g-att-row"><span class="g-att-lbl">Target</span><span class="g-att-val">${fmtFn(fmt,target)}</span></div>
-            <div class="g-att-row" style="margin-bottom:6px"><span class="g-att-lbl">Attainment</span><span class="g-att-val" style="color:${clr}">${pr}%</span></div>
-            <div class="g-prog"><div class="g-prog-bar" style="width:${pr}%;background:${clr}"></div></div>
-          </div>`:''}
-        </div>`;
-      });
-    }
-    html+=`</div></div>`;
+// ── Helper column utilities ──
+function getColumns(){ return allRows.length?Object.keys(allRows[0]):[]; }
+function getDateColumns(){
+  return getColumns().filter(col=>{
+    const samples=allRows.slice(0,15).map(r=>r[col]).filter(v=>v!==''&&v!=null);
+    if(!samples.length) return false;
+    const datelike=samples.filter(v=>{ const s=String(v); return s.match(/\d{4}/)&&(s.match(/[\/\-]/)||s.match(/[A-Za-z]/)); }).length;
+    return datelike/samples.length>0.3;
   });
-  document.getElementById('goalsContent').innerHTML=html;
+}
+function getNumericColumns(){
+  return getColumns().filter(col=>{
+    const samples=allRows.slice(0,20).map(r=>r[col]).filter(v=>v!==''&&v!=null);
+    if(!samples.length) return false;
+    return samples.filter(v=>!isNaN(parseFloat(String(v).replace(/[$,]/g,'')))).length/samples.length>0.7;
+  });
+}
+function getUniqueVals(col,limit=25){
+  return [...new Set(allRows.map(r=>String(r[col]||'').trim()).filter(Boolean))].sort().slice(0,limit);
+}
+function parseFlexDate(v){
+  if(!v) return null;
+  const s=String(v).trim();
+  const d=new Date(s);
+  if(!isNaN(d.getTime())&&s.length>4) return d;
+  const my=s.match(/^([A-Za-z]+)\s+(\d{4})$/);
+  if(my){
+    const MONS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const mi=MONS.findIndex(m=>my[1].toLowerCase().startsWith(m.toLowerCase()));
+    if(mi>=0) return new Date(parseInt(my[2]),mi,15);
+  }
+  return null;
+}
+function filterByDate(rows,col,start,end){
+  if(!col||col==='none'||(!start&&!end)) return rows;
+  const s=start?new Date(start):null;
+  const e=end?new Date(end+'T23:59:59'):null;
+  return rows.filter(r=>{ const d=parseFlexDate(r[col]); if(!d) return true; if(s&&d<s) return false; if(e&&d>e) return false; return true; });
+}
+function filterByLeadSource(rows,ls){
+  if(!ls||ls==='all') return rows;
+  return rows.filter(r=>String(r[LEADGEN_COL]||'').trim().toLowerCase()===ls.toLowerCase());
+}
+function matchRowVal(row,col,val){
+  if(!col) return true;
+  const v=String(row[col]??'').trim();
+  if(!val||val==='__any__') return v!==''&&v.toLowerCase()!=='no'&&v.toLowerCase()!=='n'&&v!=='0'&&v.toLowerCase()!=='false';
+  return v.toLowerCase()===val.toLowerCase();
+}
+
+// ── Compute actual for a goal ──
+function computeGoal(g){
+  if(g.type==='count'){
+    let rows=allRows;
+    rows=filterByLeadSource(rows,g.countLeadSource);
+    rows=filterByDate(rows,g.countDateCol,g.countStart,g.countEnd);
+    return rows.filter(r=>matchRowVal(r,g.countCol,g.countVal)).length;
+  }
+  if(g.type==='rate'){
+    let numRows=filterByLeadSource(allRows,g.numLeadSource);
+    numRows=filterByDate(numRows,g.numDateCol,g.numStart,g.numEnd);
+    const num=numRows.filter(r=>matchRowVal(r,g.numCol,g.numVal)).length;
+    let denRows=filterByLeadSource(allRows,g.denLeadSource);
+    denRows=filterByDate(denRows,g.denDateCol,g.denStart,g.denEnd);
+    const den=denRows.filter(r=>matchRowVal(r,g.denCol,g.denVal)).length;
+    return den>0?Math.round(num/den*1000)/10:0;
+  }
+  if(g.type==='sum'){
+    let rows=filterByLeadSource(allRows,g.sumLeadSource);
+    rows=filterByDate(rows,g.sumDateCol,g.sumStart,g.sumEnd);
+    if(g.sumFilterCol&&g.sumFilterCol!=='none'&&g.sumFilterVal){
+      rows=rows.filter(r=>matchRowVal(r,g.sumFilterCol,g.sumFilterVal));
+    }
+    return rows.reduce((s,r)=>s+toNum(r[g.sumCol]),0);
+  }
+  return 0;
+}
+
+function goalSummary(g){
+  if(g.type==='count'){
+    const val=g.countVal&&g.countVal!=='__any__'?` = "${g.countVal}"`:'';
+    const ls=g.countLeadSource&&g.countLeadSource!=='all'?' · '+g.countLeadSource:'';
+    const dr=(g.countStart||g.countEnd)?' · '+(g.countStart||'')+'→'+(g.countEnd||''):'';
+    return `Count rows where ${g.countCol||'—'}${val}${ls}${dr}`;
+  }
+  if(g.type==='rate'){
+    return `(${g.numCol||'—'}) ÷ (${g.denCol||'—'}) × 100`;
+  }
+  if(g.type==='sum'){
+    const filt=g.sumFilterCol&&g.sumFilterCol!=='none'?` filtered by ${g.sumFilterCol}`:'';
+    return `Sum of ${g.sumCol||'—'}${filt}`;
+  }
+  return '';
+}
+
+function goalActualDisplay(g,actual){
+  if(g.type==='rate') return (Math.round(actual*10)/10)+'%';
+  if(g.type==='sum') return fmtD(actual);
+  return fmtN(actual);
+}
+
+function goalTargetDisplay(g){
+  const t=toNum(g.target);
+  if(g.type==='rate') return (Math.round(t*10)/10)+'%';
+  if(g.type==='sum') return fmtD(t);
+  return fmtN(t);
+}
+
+// ── Render goal cards ──
+function renderGoalsTab(){
+  const grid=document.getElementById('gv4Grid');
+  if(!grid) return;
+  if(!goals.length){
+    grid.innerHTML=`<div class="empty" style="grid-column:1/-1"><strong>No goals yet</strong>Click "+ Add Goal" to create your first goal with the wizard.</div>`;
+    return;
+  }
+  grid.innerHTML=goals.map((g,i)=>{
+    const actual=computeGoal(g);
+    const target=toNum(g.target);
+    const pr=target?Math.min(100,Math.round(actual/target*100)):0;
+    const accentClr=pr>=100?C.green:pr>=70?C.orange:C.red;
+    const typeCls=g.type==='count'?'ct':g.type==='rate'?'rt':'sm';
+    const typeLbl=g.type==='count'?'COUNT':g.type==='rate'?'RATE':'SUM';
+    return `<div class="gv4-card">
+      <div class="gv4-accent" style="background:${accentClr}"></div>
+      <div class="gv4-top">
+        <span class="gv4-type ${typeCls}">${typeLbl}</span>
+        <div class="gv4-actions">
+          <button class="btn btn-o" style="font-size:11px;padding:4px 10px" onclick="editGoal(${i})">Edit</button>
+          <button class="btn btn-del" onclick="deleteGoal(${i})">✕</button>
+        </div>
+      </div>
+      <div class="gv4-name">${g.name||'Unnamed Goal'}</div>
+      <div class="gv4-summary">${goalSummary(g)}</div>
+      <div class="gv4-nums">
+        <div class="gv4-num"><div class="gv4-nv" style="color:${accentClr}">${goalActualDisplay(g,actual)}</div><div class="gv4-nl">Actual</div></div>
+        <div class="gv4-num"><div class="gv4-nv">${target?goalTargetDisplay(g):'—'}</div><div class="gv4-nl">Target</div></div>
+        <div class="gv4-num"><div class="gv4-nv" style="color:${accentClr}">${target?pr+'%':'—'}</div><div class="gv4-nl">Attained</div></div>
+      </div>
+      ${target?`<div class="gv4-bar-wrap"><div class="gv4-bar" style="width:${pr}%;background:${accentClr}"></div></div>`:'<div style="height:17px"></div>'}
+    </div>`;
+  }).join('');
+}
+
+function deleteGoal(i){ goals.splice(i,1); persistGoals(); renderGoalsTab(); }
+
+// ══════════════════════════════════════════════
+// WIZARD
+// ══════════════════════════════════════════════
+let wiz={};  // wizard state
+
+function wizSteps(){
+  const t=wiz.draft.type;
+  if(!t) return ['name','type'];
+  if(t==='count'){
+    const s=['name','type','countCol','countVal','countDateCol'];
+    if(wiz.draft.countDateCol&&wiz.draft.countDateCol!=='none') s.push('countDateRange');
+    s.push('countLeadSource','target');
+    return s;
+  }
+  if(t==='rate'){
+    const s=['name','type','numCol','numVal','numDateCol'];
+    if(wiz.draft.numDateCol&&wiz.draft.numDateCol!=='none') s.push('numDateRange');
+    s.push('numLeadSource','denCol','denVal','denDateCol');
+    if(wiz.draft.denDateCol&&wiz.draft.denDateCol!=='none') s.push('denDateRange');
+    s.push('denLeadSource','target');
+    return s;
+  }
+  if(t==='sum'){
+    const s=['name','type','sumCol','sumFilterCol'];
+    if(wiz.draft.sumFilterCol&&wiz.draft.sumFilterCol!=='none') s.push('sumFilterVal');
+    s.push('sumDateCol');
+    if(wiz.draft.sumDateCol&&wiz.draft.sumDateCol!=='none') s.push('sumDateRange');
+    s.push('sumLeadSource','target');
+    return s;
+  }
+  return ['name','type'];
+}
+
+function openWizard(editIdx){
+  wiz.editIdx = (editIdx!=null)?editIdx:null;
+  wiz.draft = (editIdx!=null)?{...goals[editIdx]}:{type:null};
+  wiz.stepIdx=0;
+  document.getElementById('wizardModal').style.display='flex';
+  document.getElementById('wizTitle').textContent=(editIdx!=null)?'Edit Goal':'Add Goal';
+  wizRender();
+}
+
+function closeWizard(){
+  document.getElementById('wizardModal').style.display='none';
+  wiz={};
+}
+
+function editGoal(i){ openWizard(i); }
+
+function wizRender(){
+  const steps=wizSteps();
+  const idx=wiz.stepIdx;
+  const step=steps[idx];
+  // Progress dots
+  const progEl=document.getElementById('wizProg');
+  progEl.innerHTML=steps.map((_,i)=>`<div class="wiz-dot${i<idx?' done':i===idx?' active':''}"></div>`).join('');
+  // Step label
+  document.getElementById('wizStepLbl').textContent=`Step ${idx+1} of ${steps.length}`;
+  // Back/Next labels
+  document.getElementById('wizBackBtn').textContent=idx===0?'Cancel':'← Back';
+  document.getElementById('wizNextBtn').textContent=idx===steps.length-1?'Save Goal':'Next →';
+  // Error clear
+  const errEl=document.getElementById('wizErr'); errEl.style.display='none';
+  // Body
+  document.getElementById('wizBody').innerHTML=wizStepHTML(step);
+  // Auto-focus first input
+  setTimeout(()=>{ document.querySelector('#wizBody input,#wizBody select')?.focus(); },50);
+}
+
+function wizStepHTML(step){
+  const d=wiz.draft;
+  const cols=getColumns();
+  const dateCols=getDateColumns();
+  const numCols=getNumericColumns();
+  const lsSources=['all',...leadGenTypes];
+
+  const colOpts=(selected,extraFirst)=>{
+    let html=extraFirst?`<option value="none">${extraFirst}</option>`:'';
+    const dateFirst=dateCols.filter(c=>cols.includes(c));
+    const others=cols.filter(c=>!dateFirst.includes(c));
+    if(step.includes('Date')||step==='sumDateCol'){
+      html+=`<option value="none">No date filter</option>`;
+      if(dateFirst.length) html+=`<optgroup label="Date columns">${dateFirst.map(c=>`<option value="${c}"${c===selected?' selected':''}>${c}</option>`).join('')}</optgroup>`;
+      html+=`<optgroup label="All columns">${others.map(c=>`<option value="${c}"${c===selected?' selected':''}>${c}</option>`).join('')}</optgroup>`;
+    } else {
+      html+=cols.map(c=>`<option value="${c}"${c===selected?' selected':''}>${c}</option>`).join('');
+    }
+    return html;
+  };
+
+  const valOpts=(col,selected)=>{
+    const vals=col&&col!=='none'?getUniqueVals(col):[];
+    let html=`<option value="__any__"${!selected||selected==='__any__'?' selected':''}>Any non-empty value</option>`;
+    html+=vals.map(v=>`<option value="${v}"${v===selected?' selected':''}>${v}</option>`).join('');
+    return html;
+  };
+
+  const lsOpts=(selected)=>lsSources.map(ls=>`<option value="${ls}"${ls===(selected||'all')?' selected':''}>${ls==='all'?'All lead sources':ls}</option>`).join('');
+
+  const numColOpts=(selected)=>numCols.map(c=>`<option value="${c}"${c===selected?' selected':''}>${c}</option>`).join('');
+
+  const dateRangeHTML=(startKey,endKey)=>`
+    <div class="wiz-hint">Filter to rows where the date column falls in this range. Leave blank for no limit.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+      <div><div style="font-size:11px;color:var(--t2);margin-bottom:4px">Start date</div><input type="date" class="wiz-date" id="wiz-${startKey}" value="${d[startKey]||''}"></div>
+      <div><div style="font-size:11px;color:var(--t2);margin-bottom:4px">End date</div><input type="date" class="wiz-date" id="wiz-${endKey}" value="${d[endKey]||''}"></div>
+    </div>`;
+
+  switch(step){
+    case 'name': return `
+      <div class="wiz-q">What do you want to call this goal?</div>
+      <div class="wiz-hint">Give it a short, descriptive name. This appears on the goal card.</div>
+      <input class="wiz-inp" id="wiz-name" type="text" placeholder="e.g. Q2 Show Rate" value="${d.name||''}">`;
+
+    case 'type': return `
+      <div class="wiz-q">What type of goal is this?</div>
+      <div class="wiz-type-grid">
+        <div class="wiz-type-btn${d.type==='count'?' active':''}" onclick="wizPickType('count')">
+          <div class="wiz-type-icon">#</div>
+          <div class="wiz-type-lbl">Count</div>
+          <div class="wiz-type-desc">Count rows matching a condition</div>
+          <div class="wiz-type-eg">e.g. # of meetings happened</div>
+        </div>
+        <div class="wiz-type-btn${d.type==='rate'?' active':''}" onclick="wizPickType('rate')">
+          <div class="wiz-type-icon">%</div>
+          <div class="wiz-type-lbl">Rate</div>
+          <div class="wiz-type-desc">Numerator ÷ denominator × 100</div>
+          <div class="wiz-type-eg">e.g. show rate, pipe rate</div>
+        </div>
+        <div class="wiz-type-btn${d.type==='sum'?' active':''}" onclick="wizPickType('sum')">
+          <div class="wiz-type-icon">$</div>
+          <div class="wiz-type-lbl">Sum</div>
+          <div class="wiz-type-desc">Sum a numeric column</div>
+          <div class="wiz-type-eg">e.g. total pipeline value</div>
+        </div>
+      </div>`;
+
+    case 'countCol': return `
+      <div class="wiz-badge">COUNT</div>
+      <div class="wiz-q">Which column are you counting?</div>
+      <div class="wiz-hint">Rows will be counted when the value in this column matches what you choose next.</div>
+      <select class="wiz-sel" id="wiz-countCol"><option value="">— pick a column —</option>${cols.map(c=>`<option value="${c}"${c===d.countCol?' selected':''}>${c}</option>`).join('')}</select>`;
+
+    case 'countVal': return `
+      <div class="wiz-badge">COUNT</div>
+      <div class="wiz-q">What value should the row have in <em>${d.countCol}</em>?</div>
+      <div class="wiz-hint">"Any non-empty value" counts every row that has something in this column.</div>
+      <select class="wiz-sel" id="wiz-countVal">${valOpts(d.countCol,d.countVal)}</select>`;
+
+    case 'countDateCol': return `
+      <div class="wiz-badge">COUNT</div>
+      <div class="wiz-q">Filter by a date column? <span style="color:var(--t2);font-size:13px">(optional)</span></div>
+      <div class="wiz-hint">If you pick a date column, you'll set a date range on the next step.</div>
+      <select class="wiz-sel" id="wiz-countDateCol">
+        <option value="none"${d.countDateCol==='none'||!d.countDateCol?' selected':''}>No date filter</option>
+        ${dateCols.map(c=>`<option value="${c}"${c===d.countDateCol?' selected':''}>${c}</option>`).join('')}
+      </select>`;
+
+    case 'countDateRange': return `
+      <div class="wiz-badge">COUNT</div>
+      <div class="wiz-q">Date range for <em>${d.countDateCol}</em></div>
+      ${dateRangeHTML('countStart','countEnd')}`;
+
+    case 'countLeadSource': return `
+      <div class="wiz-badge">COUNT</div>
+      <div class="wiz-q">Filter by lead source? <span style="color:var(--t2);font-size:13px">(optional)</span></div>
+      <select class="wiz-sel" id="wiz-countLeadSource">${lsOpts(d.countLeadSource)}</select>`;
+
+    case 'numCol': return `
+      <div class="wiz-badge">RATE — Numerator</div>
+      <div class="wiz-q">Numerator: which column?</div>
+      <div class="wiz-hint">The top number of the rate. You'll also pick what value it must have.</div>
+      <select class="wiz-sel" id="wiz-numCol"><option value="">— pick a column —</option>${cols.map(c=>`<option value="${c}"${c===d.numCol?' selected':''}>${c}</option>`).join('')}</select>`;
+
+    case 'numVal': return `
+      <div class="wiz-badge">RATE — Numerator</div>
+      <div class="wiz-q">Numerator value in <em>${d.numCol}</em></div>
+      <select class="wiz-sel" id="wiz-numVal">${valOpts(d.numCol,d.numVal)}</select>`;
+
+    case 'numDateCol': return `
+      <div class="wiz-badge">RATE — Numerator</div>
+      <div class="wiz-q">Date filter for numerator? <span style="color:var(--t2);font-size:13px">(optional)</span></div>
+      <select class="wiz-sel" id="wiz-numDateCol">
+        <option value="none"${d.numDateCol==='none'||!d.numDateCol?' selected':''}>No date filter</option>
+        ${dateCols.map(c=>`<option value="${c}"${c===d.numDateCol?' selected':''}>${c}</option>`).join('')}
+      </select>`;
+
+    case 'numDateRange': return `
+      <div class="wiz-badge">RATE — Numerator</div>
+      <div class="wiz-q">Date range for numerator (<em>${d.numDateCol}</em>)</div>
+      ${dateRangeHTML('numStart','numEnd')}`;
+
+    case 'numLeadSource': return `
+      <div class="wiz-badge">RATE — Numerator</div>
+      <div class="wiz-q">Lead source filter for numerator? <span style="color:var(--t2);font-size:13px">(optional)</span></div>
+      <select class="wiz-sel" id="wiz-numLeadSource">${lsOpts(d.numLeadSource)}</select>`;
+
+    case 'denCol': return `
+      <div class="wiz-badge">RATE — Denominator</div>
+      <div class="wiz-q">Denominator: which column?</div>
+      <div class="wiz-hint">The bottom number — the total that the numerator is divided by.</div>
+      <select class="wiz-sel" id="wiz-denCol"><option value="">— pick a column —</option>${cols.map(c=>`<option value="${c}"${c===d.denCol?' selected':''}>${c}</option>`).join('')}</select>`;
+
+    case 'denVal': return `
+      <div class="wiz-badge">RATE — Denominator</div>
+      <div class="wiz-q">Denominator value in <em>${d.denCol}</em></div>
+      <select class="wiz-sel" id="wiz-denVal">${valOpts(d.denCol,d.denVal)}</select>`;
+
+    case 'denDateCol': return `
+      <div class="wiz-badge">RATE — Denominator</div>
+      <div class="wiz-q">Date filter for denominator? <span style="color:var(--t2);font-size:13px">(optional)</span></div>
+      <select class="wiz-sel" id="wiz-denDateCol">
+        <option value="none"${d.denDateCol==='none'||!d.denDateCol?' selected':''}>No date filter</option>
+        ${dateCols.map(c=>`<option value="${c}"${c===d.denDateCol?' selected':''}>${c}</option>`).join('')}
+      </select>`;
+
+    case 'denDateRange': return `
+      <div class="wiz-badge">RATE — Denominator</div>
+      <div class="wiz-q">Date range for denominator (<em>${d.denDateCol}</em>)</div>
+      ${dateRangeHTML('denStart','denEnd')}`;
+
+    case 'denLeadSource': return `
+      <div class="wiz-badge">RATE — Denominator</div>
+      <div class="wiz-q">Lead source filter for denominator? <span style="color:var(--t2);font-size:13px">(optional)</span></div>
+      <select class="wiz-sel" id="wiz-denLeadSource">${lsOpts(d.denLeadSource)}</select>`;
+
+    case 'sumCol': return `
+      <div class="wiz-badge">SUM</div>
+      <div class="wiz-q">Which numeric column do you want to sum?</div>
+      <select class="wiz-sel" id="wiz-sumCol"><option value="">— pick a column —</option>${(numCols.length?numCols:cols).map(c=>`<option value="${c}"${c===d.sumCol?' selected':''}>${c}</option>`).join('')}</select>`;
+
+    case 'sumFilterCol': return `
+      <div class="wiz-badge">SUM</div>
+      <div class="wiz-q">Filter rows before summing? <span style="color:var(--t2);font-size:13px">(optional)</span></div>
+      <div class="wiz-hint">Only rows matching this column/value will be included in the sum.</div>
+      <select class="wiz-sel" id="wiz-sumFilterCol">
+        <option value="none"${d.sumFilterCol==='none'||!d.sumFilterCol?' selected':''}>No row filter</option>
+        ${cols.map(c=>`<option value="${c}"${c===d.sumFilterCol?' selected':''}>${c}</option>`).join('')}
+      </select>`;
+
+    case 'sumFilterVal': return `
+      <div class="wiz-badge">SUM</div>
+      <div class="wiz-q">Filter: value in <em>${d.sumFilterCol}</em></div>
+      <select class="wiz-sel" id="wiz-sumFilterVal">${valOpts(d.sumFilterCol,d.sumFilterVal)}</select>`;
+
+    case 'sumDateCol': return `
+      <div class="wiz-badge">SUM</div>
+      <div class="wiz-q">Filter by a date column? <span style="color:var(--t2);font-size:13px">(optional)</span></div>
+      <select class="wiz-sel" id="wiz-sumDateCol">
+        <option value="none"${d.sumDateCol==='none'||!d.sumDateCol?' selected':''}>No date filter</option>
+        ${dateCols.map(c=>`<option value="${c}"${c===d.sumDateCol?' selected':''}>${c}</option>`).join('')}
+      </select>`;
+
+    case 'sumDateRange': return `
+      <div class="wiz-badge">SUM</div>
+      <div class="wiz-q">Date range for <em>${d.sumDateCol}</em></div>
+      ${dateRangeHTML('sumStart','sumEnd')}`;
+
+    case 'sumLeadSource': return `
+      <div class="wiz-badge">SUM</div>
+      <div class="wiz-q">Filter by lead source? <span style="color:var(--t2);font-size:13px">(optional)</span></div>
+      <select class="wiz-sel" id="wiz-sumLeadSource">${lsOpts(d.sumLeadSource)}</select>`;
+
+    case 'target': return `
+      <div class="wiz-q">What is your target value?</div>
+      <div class="wiz-hint">${d.type==='rate'?'Enter a percentage, e.g. 65 for 65%.':d.type==='sum'?'Enter a dollar amount without commas, e.g. 500000.':'Enter a whole number count.'}</div>
+      <input class="wiz-inp" id="wiz-target" type="number" placeholder="${d.type==='rate'?'e.g. 65':d.type==='sum'?'e.g. 500000':'e.g. 100'}" value="${d.target||''}">`;
+
+    default: return '';
+  }
+}
+
+function wizPickType(t){
+  wiz.draft.type=t;
+  document.querySelectorAll('.wiz-type-btn').forEach(b=>b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+function wizCollectStep(step){
+  const d=wiz.draft;
+  const get=id=>{ const el=document.getElementById('wiz-'+id); return el?el.value:''; };
+  switch(step){
+    case 'name':
+      d.name=get('name').trim();
+      if(!d.name){ wizErr('Please enter a name.'); return false; }
+      break;
+    case 'type':
+      if(!d.type){ wizErr('Please pick a goal type.'); return false; }
+      break;
+    case 'countCol': d.countCol=get('countCol'); if(!d.countCol){wizErr('Pick a column.');return false;} break;
+    case 'countVal': d.countVal=get('countVal'); break;
+    case 'countDateCol': d.countDateCol=get('countDateCol'); break;
+    case 'countDateRange': d.countStart=get('countStart'); d.countEnd=get('countEnd'); break;
+    case 'countLeadSource': d.countLeadSource=get('countLeadSource'); break;
+    case 'numCol': d.numCol=get('numCol'); if(!d.numCol){wizErr('Pick a column.');return false;} break;
+    case 'numVal': d.numVal=get('numVal'); break;
+    case 'numDateCol': d.numDateCol=get('numDateCol'); break;
+    case 'numDateRange': d.numStart=get('numStart'); d.numEnd=get('numEnd'); break;
+    case 'numLeadSource': d.numLeadSource=get('numLeadSource'); break;
+    case 'denCol': d.denCol=get('denCol'); if(!d.denCol){wizErr('Pick a column.');return false;} break;
+    case 'denVal': d.denVal=get('denVal'); break;
+    case 'denDateCol': d.denDateCol=get('denDateCol'); break;
+    case 'denDateRange': d.denStart=get('denStart'); d.denEnd=get('denEnd'); break;
+    case 'denLeadSource': d.denLeadSource=get('denLeadSource'); break;
+    case 'sumCol': d.sumCol=get('sumCol'); if(!d.sumCol){wizErr('Pick a column.');return false;} break;
+    case 'sumFilterCol': d.sumFilterCol=get('sumFilterCol'); break;
+    case 'sumFilterVal': d.sumFilterVal=get('sumFilterVal'); break;
+    case 'sumDateCol': d.sumDateCol=get('sumDateCol'); break;
+    case 'sumDateRange': d.sumStart=get('sumStart'); d.sumEnd=get('sumEnd'); break;
+    case 'sumLeadSource': d.sumLeadSource=get('sumLeadSource'); break;
+    case 'target':
+      d.target=parseFloat(get('target'));
+      if(isNaN(d.target)||d.target<0){wizErr('Enter a valid number.');return false;}
+      break;
+  }
+  return true;
+}
+
+function wizErr(msg){ const el=document.getElementById('wizErr'); el.textContent=msg; el.style.display='inline'; }
+
+function wizardNext(){
+  const steps=wizSteps();
+  const step=steps[wiz.stepIdx];
+  if(!wizCollectStep(step)) return;
+  if(wiz.stepIdx===steps.length-1){
+    // Save
+    if(wiz.editIdx!=null) goals[wiz.editIdx]={...wiz.draft};
+    else goals.push({...wiz.draft});
+    persistGoals();
+    closeWizard();
+    renderGoalsTab();
+    return;
+  }
+  wiz.stepIdx++;
+  wizRender();
+}
+
+function wizardBack(){
+  if(wiz.stepIdx===0){ closeWizard(); return; }
+  wiz.stepIdx--;
+  wizRender();
 }
 
 // ─── TABS ────────────────────────────────────────
