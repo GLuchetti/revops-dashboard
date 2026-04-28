@@ -101,16 +101,20 @@
     .nw-sub  { font-size:11px; color:var(--t2); margin-top:2px; }
     .insight-list { display:flex; flex-direction:column; gap:9px; }
     .insight { display:flex; align-items:flex-start; gap:11px; padding:11px 13px; background:var(--sur2); border-radius:8px; border:1px solid var(--brd); animation:fadeUp .35s ease forwards; opacity:0; }
-    .insight:nth-child(1){animation-delay:.05s} .insight:nth-child(2){animation-delay:.10s}
-    .insight:nth-child(3){animation-delay:.15s} .insight:nth-child(4){animation-delay:.20s}
-    .insight:nth-child(5){animation-delay:.25s}
     @keyframes fadeUp { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
-    .i-dot { width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0; margin-top:1px; }
+    .i-dot { width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; flex-shrink:0; margin-top:2px; }
     .d-up  { background:rgba(107,238,169,.15); color:var(--green); }
     .d-dn  { background:rgba(255,77,107,.15);  color:var(--red); }
     .d-wn  { background:rgba(255,194,122,.15); color:var(--orange); }
     .d-id  { background:rgba(0,136,255,.15);   color:var(--blue); }
     .d-in  { background:rgba(0,213,226,.15);   color:var(--cyan); }
+    .i-body { display:flex; flex-direction:column; gap:4px; flex:1; min-width:0; }
+    .i-priority { font-size:9px; font-weight:700; letter-spacing:0.8px; padding:2px 6px; border-radius:3px; display:inline-block; text-transform:uppercase; width:fit-content; }
+    .ip-critical { background:rgba(255,77,107,.18); color:var(--red); }
+    .ip-high     { background:rgba(255,140,60,.18); color:var(--orange); }
+    .ip-watch    { background:rgba(255,194,122,.18); color:#b88400; }
+    .ip-info     { background:rgba(0,136,255,.15); color:var(--blue); }
+    .ip-good     { background:rgba(107,238,169,.15); color:var(--green); }
     .i-txt { font-size:13px; color:var(--t3); line-height:1.5; }
     .i-txt strong { color:var(--text); font-weight:500; }
     .no-data-note { font-size:13px; color:var(--t2); padding:14px; text-align:center; }
@@ -184,31 +188,6 @@
     .gv4-bar { height:100%; border-radius:3px; transition:width .7s cubic-bezier(.4,0,.2,1); }
     .gv4-actions { display:flex; gap:6px; justify-content:flex-end; }
 
-    /* GOAL TRACKER */
-    .gt-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
-    .gt-card { background:var(--sur); border:1px solid var(--brd); border-radius:var(--r); padding:20px; position:relative; overflow:hidden; transition:border-color .2s; }
-    .gt-card:hover { border-color:rgba(0,136,255,.3); }
-    .gt-card-accent { position:absolute; top:0; left:0; right:0; height:3px; }
-    .gt-period { display:inline-block; font-size:10px; font-weight:500; padding:2px 9px; border-radius:10px; background:var(--bdim); color:var(--blue); margin-bottom:10px; text-transform:uppercase; letter-spacing:.8px; }
-    .gt-name { font-size:15px; font-weight:500; margin-bottom:6px; line-height:1.3; }
-    .gt-metric { font-size:11px; color:var(--t2); margin-bottom:14px; }
-    .gt-nums { display:flex; justify-content:space-between; margin-bottom:8px; }
-    .gt-num { text-align:center; }
-    .gt-num-val { font-size:20px; font-weight:700; line-height:1; }
-    .gt-num-lbl { font-size:10px; color:var(--t2); margin-top:3px; text-transform:uppercase; letter-spacing:.7px; }
-    .gt-bar-wrap { height:6px; background:var(--sur3); border-radius:3px; overflow:hidden; margin-bottom:10px; }
-    .gt-bar { height:100%; border-radius:3px; transition:width .7s cubic-bezier(.4,0,.2,1); }
-    .gt-status { display:flex; align-items:center; justify-content:space-between; }
-    .gt-badge { font-size:10px; font-weight:500; padding:3px 10px; border-radius:10px; }
-    .gt-on   { background:rgba(107,238,169,.12); color:var(--green); }
-    .gt-risk { background:rgba(255,194,122,.12); color:var(--orange); }
-    .gt-off  { background:rgba(255,77,107,.12);  color:var(--red); }
-    .gt-na   { background:rgba(138,155,192,.1);  color:var(--t2); }
-    .gt-pct  { font-size:13px; font-weight:700; }
-    .gt-section-hdr { font-size:10px; font-weight:500; color:var(--t2); text-transform:uppercase; letter-spacing:1.1px; margin:24px 0 12px; padding-bottom:8px; border-bottom:1px solid var(--brd); }
-    .gt-summary-stat { text-align:center; }
-    .gt-summary-val { font-size:22px; font-weight:700; }
-    .gt-summary-lbl { font-size:10px; color:var(--t2); text-transform:uppercase; letter-spacing:.8px; }
 
     /* EMPTY */
     .empty { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:140px; color:var(--t2); font-size:13px; gap:5px; }
@@ -260,7 +239,6 @@
 <div class="nav-tabs" id="navTabs">
   <div class="nav-tab active" onclick="switchTab('dashboard',this)">Dashboard</div>
   <!-- lead gen tabs injected by JS -->
-  <div class="nav-tab" onclick="switchTab('goaltracker',this)">Goal Tracker</div>
   <div class="nav-tab" onclick="switchTab('goals',this)">Goals</div>
 </div>
 
@@ -313,7 +291,7 @@
         <div class="nw-icon">💡</div>
         <div>
           <div class="nw-title">Now What — Analysis &amp; Recommendations</div>
-          <div class="nw-sub">Auto-generated from current data. Refreshes every sync.</div>
+          <div class="nw-sub">Ranked by impact — most critical actions first. Refreshes every sync.</div>
         </div>
       </div>
       <div id="insightList" class="insight-list">
@@ -328,29 +306,6 @@
   </div>
 
   <!-- ══ LEAD GEN TABS (injected by JS) ══ -->
-
-  <!-- ══ GOAL TRACKER TAB ══ -->
-  <div id="tab-goaltracker" class="tab-panel">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px">
-      <div>
-        <h2 style="font-size:18px;font-weight:500">Goal Tracker</h2>
-        <p style="font-size:12px;color:var(--t2);margin-top:4px">Goals pulled from your Excel "Goals" sheet. Sync via Office Script to update.</p>
-      </div>
-      <div id="gt-summary" style="display:flex;gap:16px;align-items:center"></div>
-    </div>
-    <!-- Date range bar -->
-    <div style="display:flex;align-items:center;gap:12px;background:var(--sur);border:1px solid var(--brd);border-radius:8px;padding:11px 16px;margin-bottom:20px;flex-wrap:wrap">
-      <span style="font-size:10px;font-weight:500;color:var(--t2);text-transform:uppercase;letter-spacing:.9px;white-space:nowrap">Date Range</span>
-      <input type="date" id="gt-start" onchange="renderGoalTracker()" style="background:var(--sur2);border:1px solid var(--brd);color:var(--t3);padding:5px 10px;border-radius:6px;font-size:12px;font-family:Roboto,sans-serif;color-scheme:dark;outline:none">
-      <span style="color:var(--t2);font-size:13px">→</span>
-      <input type="date" id="gt-end" onchange="renderGoalTracker()" style="background:var(--sur2);border:1px solid var(--brd);color:var(--t3);padding:5px 10px;border-radius:6px;font-size:12px;font-family:Roboto,sans-serif;color-scheme:dark;outline:none">
-      <button class="btn btn-o" style="font-size:11px;padding:5px 12px" onclick="document.getElementById('gt-start').value='';document.getElementById('gt-end').value='';renderGoalTracker()">Clear</button>
-      <span id="gt-date-note" style="font-size:11px;color:var(--t2);margin-left:4px"></span>
-    </div>
-    <div id="gt-content">
-      <div class="empty"><strong>No goals synced yet</strong>Add a "Goals" sheet to your Excel file, then run the Office Script.</div>
-    </div>
-  </div>
 
   <!-- ══ GOALS TAB ══ -->
   <div id="tab-goals" class="tab-panel">
@@ -391,13 +346,6 @@
 // ⚙️  CONFIG
 const LEADGEN_COL = 'Lead Source'; // column that holds Inbound/Outbound/Sales Rep
 
-// Goals sheet column names — update to match your Excel "Goals" sheet headers
-const GOAL_COL_NAME    = 'Goal';       // the goal description / name
-const GOAL_COL_METRIC  = 'Metric';     // what to measure (e.g. "Meetings Scheduled")
-const GOAL_COL_TARGET  = 'Target';     // numeric target
-const GOAL_COL_PERIOD  = 'Quarter';    // period: Q1 / Q2 / Q3 / Q4 / Annual
-const GOAL_COL_YEAR    = 'Year';       // (optional) year column e.g. 2026
-const GOAL_COL_SOURCE  = 'Lead Source';// (optional) filter by lead source
 // ════════════════════════════════════════════════
 
 const DATA_URL = 'data.json';
@@ -412,7 +360,7 @@ const PAL = [C.blue,C.cyan,C.green,C.orange,C.red,C.purple,'#FFD248','#00C466','
 const MONTHS   = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 // ─── STATE ───────────────────────────────────────
-let allRows=[], filteredRows=[], goals=[], goalRows=[], _ch={}, leadGenTypes=[], activeLG=null;
+let allRows=[], filteredRows=[], goals=[], _ch={}, leadGenTypes=[], activeLG=null;
 
 // ─── BOOT ────────────────────────────────────────
 document.addEventListener('DOMContentLoaded',()=>{ loadGoals(); renderGoalsTab(); fetchData(); });
@@ -423,8 +371,7 @@ async function fetchData(){
     if(!r.ok) throw new Error();
     const j=await r.json();
     allRows=(j.rows||[]).filter(r=>r&&Object.values(r).some(v=>v!==''&&v!=null));
-    goalRows=(j.goalRows||[]).filter(r=>r&&Object.values(r).some(v=>v!==''&&v!=null));
-    const el=document.getElementById('lastUpdated');
+const el=document.getElementById('lastUpdated');
     if(j.lastUpdated){
       el.textContent='Synced '+new Date(j.lastUpdated).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
       el.classList.add('live');
@@ -440,11 +387,12 @@ async function fetchData(){
 }
 
 // ─── HELPERS ─────────────────────────────────────
-// Fix #2: meeting happened = any non-empty, non-"No Show" value
-const happened  = v=>{ if(!v) return false; const s=String(v).trim().toLowerCase(); return s!==''&&s!=='no show'&&s!=='no'&&s!=='0'&&s!=='false'; };
-const scheduled = r=> !!(r['Scheduled']&&String(r['Scheduled']).trim());
-const inPipe    = r=> !!(truthy(r['Entered the Pipe'])||truthy(r['PipelineGen']));
-const isClosed  = r=> !!(r['Close Date']&&String(r['Close Date']).trim());
+// Mtg. Happened: dash = not yet, "No Show" = no show, "rescheduled" = reset, otherwise date = happened
+const happened  = v=>{ if(!v) return false; const s=String(v).trim().toLowerCase(); if(!s||s==='-'||s==='no show'||s==='no'||s==='0'||s==='false'||s.startsWith('reschedul')) return false; return true; };
+const scheduled = r=>{ const v=String(r['Scheduled']||'').trim(); return !!(v&&v!=='-'); };
+// Entered the Pipe is a date (non-empty ≠ '-' means in pipe); PipelineGen Y = confirmed pipeline
+const inPipe    = r=>{ const ep=String(r['Entered the Pipe']||'').trim(); if(ep&&ep!=='-') return true; const pg=String(r['PipelineGen']||'').trim().toLowerCase(); return pg==='y'||pg==='yes'; };
+const isClosed  = r=>{ const v=String(r['Close Date']||'').trim(); return !!(v&&v!=='-'); };
 const truthy    = v=>{ if(v===true||v===1) return true; if(!v) return false; return ['true','yes','y','x','1'].includes(String(v).trim().toLowerCase()); };
 const toNum     = v=>{ const n=parseFloat(String(v??'').replace(/[$,]/g,'')); return isNaN(n)?0:n; };
 const fmtD      = n=>n>=1e6?'$'+(n/1e6).toFixed(1)+'M':n>=1e3?'$'+(n/1e3).toFixed(0)+'K':'$'+Math.round(n).toLocaleString();
@@ -461,7 +409,7 @@ function metrics(rows){
   const pv=rows.filter(inPipe).reduce((s,r)=>s+toNum(r['Deal Amount']),0);
   const cc=rows.filter(isClosed).length;
   const cv=rows.filter(isClosed).reduce((s,r)=>s+toNum(r['Deal Amount']),0);
-  const rs=rows.reduce((s,r)=>s+toNum(r['Reschedules']),0);
+  const rs=rows.filter(r=>toNum(r['Reschedules'])>0).length;
   const cyc=rows.map(r=>toNum(r['Sales Cycle Length'])).filter(n=>n>0);
   const avg=cyc.length?Math.round(cyc.reduce((a,b)=>a+b,0)/cyc.length):0;
   return {scheduled:s,happened:h,accepted:a,pipe_cnt:pc,pipe_val:pv,close_cnt:cc,close_val:cv,reschedules:rs,avg_cycle:avg};
@@ -592,30 +540,11 @@ function renderLeadGenTab(safeId,lg){
   const insEl=document.getElementById(safeId+'-insights');
   if(!insEl) return;
   if(!rows.length){ insEl.innerHTML=`<div class="no-data-note">No data for ${lg} with current filters.</div>`; return; }
-  const ins=[];
-  const sr=pct(m.happened,m.scheduled);
-  if(m.scheduled>0){
-    if(sr>=75) ins.push({t:'up',txt:`<strong>Strong ${sr}% show rate for ${lg}</strong> — your confirmation process is working for this channel. Keep the 24-hr reminder cadence.`});
-    else if(sr<55) ins.push({t:'dn',txt:`<strong>${lg} show rate is only ${sr}%</strong> — nearly half of booked meetings aren't happening. Add a structured same-day confirmation step for this channel.`});
-    else ins.push({t:'wn',txt:`<strong>${lg} show rate: ${sr}%</strong> — room to improve. A day-before email + day-of text typically pushes this above 70%.`});
-  }
-  const hp=pct(m.pipe_cnt,m.happened);
-  if(m.happened>0){
-    if(hp>=50) ins.push({t:'up',txt:`<strong>${hp}% of ${lg} meetings generate pipeline</strong> — strong qualification coming from this source. Document the ICP criteria and replicate.`});
-    else if(hp<25) ins.push({t:'dn',txt:`<strong>Only ${hp}% of ${lg} meetings enter pipeline</strong> — this channel is generating volume but not quality. Review ICP fit before booking.`});
-    else ins.push({t:'wn',txt:`<strong>${hp}% meeting-to-pipeline rate for ${lg}.</strong> Tighten pre-qualification to improve conversion from this channel.`});
-  }
-  if(m.pipe_val>0) ins.push({t:'id',txt:`<strong>${lg} has generated ${fmtD(m.pipe_val)} in pipeline</strong> from ${m.pipe_cnt} deal${m.pipe_cnt!==1?'s':''} — avg deal size ${fmtD(m.pipe_cnt?m.pipe_val/m.pipe_cnt:0)}.`});
-  const topBDR=Object.entries(bd).sort((a,b)=>b[1].s-a[1].s)[0];
-  if(topBDR) ins.push({t:'id',txt:`<strong>${topBDR[0]} leads ${lg}</strong> with ${topBDR[1].s} meetings scheduled and ${fmtD(topBDR[1].p>0?rows.filter(r=>String(r['BDR Generator']||'').trim()===topBDR[0]&&inPipe(r)).reduce((s,r)=>s+toNum(r['Deal Amount']),0):0)} pipeline.`});
-  if(m.close_val>0) ins.push({t:'up',txt:`<strong>${fmtD(m.close_val)} closed from ${lg}</strong> — this channel is proving ROI. Protect or increase investment here.`});
-  else if(m.pipe_val>0) ins.push({t:'wn',txt:`<strong>No closed revenue yet from ${lg}</strong> — ${fmtD(m.pipe_val)} is in pipeline. Focus on accelerating the open deals rather than adding more volume.`});
-  const IC={up:'↑',dn:'↓',wn:'!',id:'→',in:'·'};const DC={up:'d-up',dn:'d-dn',wn:'d-wn',id:'d-id',in:'d-in'};
-  insEl.innerHTML=ins.slice(0,5).map(i=>`<div class="insight"><div class="i-dot ${DC[i.t]}">${IC[i.t]}</div><div class="i-txt">${i.txt}</div></div>`).join('');
+  insEl.innerHTML=insightHTML(buildInsights(rows, lg));
 }
 
 // ─── RENDER ALL ───────────────────────────────────
-function renderAll(){ renderKPIs();renderMonthly();renderLeadType();renderBDR();renderFunnel();renderPipeQ();renderVert();renderStage();renderInsights();renderGoalTracker();renderGoalsTab(); if(activeLG)renderLeadGenTab(activeLG.safeId,activeLG.lg); }
+function renderAll(){ renderKPIs();renderMonthly();renderLeadType();renderBDR();renderFunnel();renderPipeQ();renderVert();renderStage();renderInsights();renderGoalsTab(); if(activeLG)renderLeadGenTab(activeLG.safeId,activeLG.lg); }
 
 // ─── KPIs ────────────────────────────────────────
 function renderKPIs(){
@@ -688,214 +617,85 @@ function renderStage(){
 }
 
 // ─── INSIGHTS ────────────────────────────────────
-function renderInsights(){
-  const rows=filteredRows;const el=document.getElementById('insightList');
-  if(!rows.length){ el.innerHTML=`<div class="no-data-note">Sync your Excel data to generate insights.</div>`; return; }
+function buildInsights(rows, label){
   const m=metrics(rows); const ins=[];
+  const lbl=label?` for ${label}`:'';
+
+  function add(score, txt){
+    let pri,cls,arrow,dotCls;
+    if(score>=9){pri='CRITICAL';cls='ip-critical';arrow='↓';dotCls='d-dn';}
+    else if(score>=7){pri='HIGH';cls='ip-high';arrow='↓';dotCls='d-wn';}
+    else if(score>=5){pri='WATCH';cls='ip-watch';arrow='→';dotCls='d-id';}
+    else if(score>=3){pri='INFO';cls='ip-info';arrow='→';dotCls='d-id';}
+    else{pri='GOOD';cls='ip-good';arrow='↑';dotCls='d-up';}
+    ins.push({score,pri,cls,arrow,dotCls,txt});
+  }
+
+  // 1. Show rate (Scheduled → Happened)
   const sr=pct(m.happened,m.scheduled);
-  if(m.scheduled>0){ if(sr>=75)ins.push({t:'up',txt:`<strong>Strong show rate at ${sr}%</strong> — meeting confirmation process is working. Maintain 24-hour reminders.`}); else if(sr<55)ins.push({t:'dn',txt:`<strong>Show rate is only ${sr}%</strong> — nearly half of scheduled meetings are not happening. Add a structured reminder + double-confirmation flow.`}); else ins.push({t:'wn',txt:`<strong>Show rate is ${sr}%</strong> — room to improve. A 24-hour email + day-of text reminder typically pushes this above 70%.`}); }
+  if(m.scheduled>0){
+    if(sr<50)      add(10,`<strong>Show rate critically low at ${sr}%${lbl}</strong> — over half of scheduled meetings aren't happening. Implement day-before + same-day confirmation immediately.`);
+    else if(sr<65) add(8, `<strong>Show rate of ${sr}%${lbl} needs attention</strong> — ${m.scheduled-m.happened} no-shows. Add a structured 24h email + 2h text reminder sequence.`);
+    else if(sr<75) add(5, `<strong>Show rate is ${sr}%${lbl}</strong> — trending okay but room to push past 75%. A same-day text reminder typically closes this gap.`);
+    else           add(1, `<strong>Strong show rate at ${sr}%${lbl}</strong> — confirmation process is working. Keep the reminder cadence consistent.`);
+  }
+
+  // 2. Meeting → Pipeline conversion
   const hp=pct(m.pipe_cnt,m.happened);
-  if(m.happened>0){ if(hp>=50)ins.push({t:'up',txt:`<strong>${hp}% of meetings generate pipeline</strong> — strong qualification. Document what's working in discovery and replicate it.`}); else if(hp<25)ins.push({t:'dn',txt:`<strong>Only ${hp}% of meetings enter pipeline</strong> — review the post-meeting handoff. Meetings aren't converting: either ICP is off or follow-through is breaking down.`}); else ins.push({t:'wn',txt:`<strong>${hp}% meeting-to-pipeline rate</strong>. Tighten ICP criteria to pre-qualify better before booking.`}); }
-  const bd={};rows.forEach(r=>{const n=String(r['BDR Generator']||'').trim();if(!n)return;if(!bd[n])bd[n]={s:0,pv:0};if(scheduled(r))bd[n].s++;if(inPipe(r))bd[n].pv+=toNum(r['Deal Amount']);});
-  const bl=Object.entries(bd).sort((a,b)=>b[1].pv-a[1].pv);
-  if(bl.length>=2){const[tn,td]=bl[0];const[bn,_]=bl[bl.length-1];ins.push({t:'id',txt:`<strong>${tn} is leading</strong> with ${fmtD(td.pv)} in pipeline from ${td.s} meetings. Consider having ${tn} share their approach with ${bn}.`});}
-  const sc={};rows.forEach(r=>{const s=String(r[LEADGEN_COL]||'').trim();if(s)sc[s]=(sc[s]||0)+1;});const sl=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
-  if(sl.length>0&&m.scheduled>0){const tp=pct(sl[0][1],m.scheduled);if(tp>65)ins.push({t:'wn',txt:`<strong>${sl[0][0]} drives ${tp}% of meetings</strong> — concentration risk. Invest in at least 2 secondary lead sources now.`});else if(sl.length>=3)ins.push({t:'up',txt:`<strong>Lead source diversification is healthy</strong> — ${sl.length} active channels. ${sl[0][0]} leads at ${tp}%, which is sustainable.`});}
-  if(m.avg_cycle>0){if(m.avg_cycle>90)ins.push({t:'wn',txt:`<strong>Avg sales cycle of ${m.avg_cycle} days</strong> — over 3 months. Identify the longest pipeline stage and add a champion-building step to accelerate decisions.`});else if(m.avg_cycle<=45)ins.push({t:'up',txt:`<strong>Lean ${m.avg_cycle}-day sales cycle.</strong> Protect it by locking in timelines early in discovery calls.`});else ins.push({t:'in',txt:`<strong>Avg sales cycle: ${m.avg_cycle} days.</strong> Flag deals stalled over ${Math.round(m.avg_cycle*1.5)} days — they need intervention.`});}
-  const IC={up:'↑',dn:'↓',wn:'!',id:'→',in:'·'};const DC={up:'d-up',dn:'d-dn',wn:'d-wn',id:'d-id',in:'d-in'};
-  el.innerHTML=ins.slice(0,5).map(i=>`<div class="insight"><div class="i-dot ${DC[i.t]}">${IC[i.t]}</div><div class="i-txt">${i.txt}</div></div>`).join('');
-}
-
-// ─── GOAL TRACKER ────────────────────────────────
-function resolveMetric(label){
-  const l=String(label||'').toLowerCase().trim();
-  if(!l) return null;
-  // Show rate — target is a decimal (0.65 = 65%), actual computed as happened/scheduled
-  if(l.includes('show rate')||l.includes('happened /')||l.includes('happened/'))
-    return {type:'ratio', compute:m=>m.scheduled>0?m.happened/m.scheduled:0};
-  // PipelineGen = Y — count rows where PipelineGen column = Y
-  if(l.includes('pipelinegen')||(l.includes('pipeline')&&l.includes('=y')))
-    return {type:'colcount', col:'PipelineGen', val:'Y', fmt:'n'};
-  // Standard metrics
-  if(l.includes('scheduled'))  return {type:'metric',key:'scheduled', fmt:'n'};
-  if(l.includes('happened'))   return {type:'metric',key:'happened',  fmt:'n'};
-  if(l.includes('accepted'))   return {type:'metric',key:'accepted',  fmt:'n'};
-  if(l.includes('pipeline value')||l.includes('pipe val')) return {type:'metric',key:'pipe_val',fmt:'$'};
-  if(l.includes('pipeline')||l.includes('entered')) return {type:'metric',key:'pipe_cnt',fmt:'n'};
-  if(l.includes('revenue')||l.includes('closed val')) return {type:'metric',key:'close_val',fmt:'$'};
-  if(l.includes('closed')||l.includes('deals'))  return {type:'metric',key:'close_cnt',fmt:'n'};
-  if(l.includes('reschedule'))  return {type:'metric',key:'reschedules',fmt:'n'};
-  if(l.includes('cycle'))       return {type:'metric',key:'avg_cycle', fmt:'n'};
-  return null;
-}
-
-// Converts a data row to a JS Date using whatever date columns exist
-function rowToDate(row){
-  // Try explicit date columns first
-  const candidates=['Schedule Date','Pipe Date','Close Date','Date','Meeting Date'];
-  for(const c of candidates){
-    if(row[c]){ const d=new Date(row[c]); if(!isNaN(d.getTime())) return d; }
-  }
-  // Reconstruct from Schedule (M) + Schedule (Y)
-  const m=String(row['Schedule (M)']||'').trim();
-  const y=String(row['Schedule (Y)']||'').trim();
-  if(m&&y){
-    const mi=MONTHS.findIndex(mo=>m.toLowerCase().startsWith(mo.toLowerCase()));
-    if(mi>=0&&parseInt(y)>2000) return new Date(parseInt(y),mi,15);
-  }
-  return null;
-}
-
-function applyDateRange(rows, start, end){
-  if(!start&&!end) return rows;
-  const s=start?new Date(start):null;
-  const e=end?new Date(end+'T23:59:59'):null;
-  return rows.filter(r=>{ const d=rowToDate(r); if(!d) return true; if(s&&d<s) return false; if(e&&d>e) return false; return true; });
-}
-
-function renderGoalTracker(){
-  const el=document.getElementById('gt-content');
-  const sumEl=document.getElementById('gt-summary');
-  if(!el) return;
-
-  if(!goalRows.length){
-    el.innerHTML=`<div class="empty"><strong>No goals synced yet</strong>Add a "Goals" sheet to your Excel file, then run the Office Script.</div>`;
-    sumEl.innerHTML='';
-    return;
+  if(m.happened>0){
+    if(hp<20)      add(9, `<strong>Only ${hp}% of meetings enter pipeline${lbl}</strong> — ${m.happened-m.pipe_cnt} meetings produced no opportunity. Review post-meeting follow-through and ICP fit.`);
+    else if(hp<35) add(7, `<strong>Meeting-to-pipeline rate is ${hp}%${lbl}</strong> — tighten discovery questions and mandate a same-day next-step to push past 35%.`);
+    else if(hp<50) add(4, `<strong>${hp}% meeting-to-pipeline rate${lbl}</strong> — solid. Standardize the next-step ask at every meeting to push past 50%.`);
+    else           add(2, `<strong>Strong ${hp}% meeting-to-pipeline rate${lbl}</strong> — more than half of meetings are converting. Document what's working in discovery and replicate it.`);
   }
 
-  // Group goals by period
-  const byPeriod={};
-  goalRows.forEach(g=>{
-    const period=String(g[GOAL_COL_PERIOD]||'Annual').trim();
-    if(!byPeriod[period]) byPeriod[period]=[];
-    byPeriod[period].push(g);
-  });
+  // 3. BDR performance spread
+  const bd={};
+  rows.forEach(r=>{const n=String(r['BDR Generator']||'').trim();if(!n)return;if(!bd[n])bd[n]={s:0,h:0,p:0};if(scheduled(r))bd[n].s++;if(happened(r['Mtg. Happened']))bd[n].h++;if(inPipe(r))bd[n].p++;});
+  const bl=Object.entries(bd).sort((a,b)=>b[1].p-a[1].p);
+  if(bl.length>=2){
+    const[tn,td]=bl[0];const[bn,bd_]=bl[bl.length-1];
+    const topSR=pct(td.h,td.s||1);const botSR=pct(bd_.h,bd_.s||1);const spread=topSR-botSR;
+    if(spread>30) add(7, `<strong>BDR show-rate gap is ${spread}pts${lbl}</strong> — ${tn}: ${topSR}% vs ${bn}: ${botSR}%. Have ${tn} share their confirmation and objection-handling scripts.`);
+    else          add(2, `<strong>BDR performance is consistent${lbl}</strong> — ${tn} leads with ${td.p} pipeline deals. Team spread is within ${spread}pts.`);
+  } else if(bl.length===1){
+    const[tn,td]=bl[0];
+    add(3,`<strong>${tn} owns all activity${lbl}</strong> — ${td.s} scheduled, ${td.h} happened, ${td.p} in pipeline. Single-BDR risk: consider adding coverage.`);
+  }
 
-  // Compute actuals and build cards
-  const periodOrder=['Q1','Q2','Q3','Q4','Annual'];
-  const sortedPeriods=[
-    ...periodOrder.filter(p=>byPeriod[p]),
-    ...Object.keys(byPeriod).filter(p=>!periodOrder.includes(p))
-  ];
+  // 4. Lead source concentration
+  const sc={};rows.forEach(r=>{const s=String(r[LEADGEN_COL]||'').trim();if(s)sc[s]=(sc[s]||0)+1;});
+  const sl=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
+  if(sl.length>0&&m.scheduled>0){
+    const tp=pct(sl[0][1],m.scheduled);
+    if(tp>70)       add(6, `<strong>${sl[0][0]} drives ${tp}% of meetings</strong> — over-reliance creates fragility. Invest in 2+ secondary channels to reduce concentration risk.`);
+    else if(sl.length>=3) add(2, `<strong>Healthy lead source mix</strong> — ${sl.length} active channels. ${sl[0][0]} leads at ${tp}%, which is sustainable.`);
+  }
 
-  let onTrack=0, atRisk=0, behind=0, noTarget=0;
-  let html='';
+  // 5. Reschedule rate
+  if(m.reschedules>0&&m.scheduled>0){
+    const rr=Math.round(m.reschedules/(m.scheduled)*100);
+    if(rr>40)      add(7, `<strong>High reschedule rate${lbl}: ${m.reschedules} of ${m.scheduled} meetings rescheduled</strong> — check if time slots or personas are misaligned. Try Tue–Thu 10–11am blocks.`);
+    else if(rr>20) add(4, `<strong>${m.reschedules} reschedules on record${lbl}</strong> — review which segments reschedule most and tighten scheduling criteria for those groups.`);
+  }
 
-  sortedPeriods.forEach(period=>{
-    html+=`<div class="gt-section-hdr">${period}</div><div class="gt-grid">`;
-    byPeriod[period].forEach(g=>{
-      const name    = String(g[GOAL_COL_NAME]   ||'').trim() || 'Unnamed Goal';
-      const metricLbl=String(g[GOAL_COL_METRIC] ||'').trim();
-      const target  = toNum(g[GOAL_COL_TARGET]);
-      const lgFilter= String(g[GOAL_COL_SOURCE] ||'').trim();
+  // 6. Volume warning
+  if(m.scheduled>0&&m.scheduled<15) add(8, `<strong>Low volume: only ${m.scheduled} meetings in this view</strong> — results may not be statistically reliable. Broaden the date range or check data sync.`);
 
-      // Read global date range pickers
-      const globalStart=document.getElementById('gt-start')?.value||'';
-      const globalEnd  =document.getElementById('gt-end')?.value||'';
-      // Per-goal dates from Excel (Start Date / End Date columns) override global pickers
-      const goalStart=String(g['Start Date']||'').trim();
-      const goalEnd  =String(g['End Date']  ||'').trim();
-      const useStart=goalStart||globalStart;
-      const useEnd  =goalEnd  ||globalEnd;
+  return ins.sort((a,b)=>b.score-a.score);
+}
 
-      // Update note label
-      const noteEl=document.getElementById('gt-date-note');
-      if(noteEl&&(globalStart||globalEnd)){
-        noteEl.textContent=(globalStart?'From '+globalStart:'')+' '+(globalEnd?'to '+globalEnd:'');
-      } else if(noteEl){ noteEl.textContent=''; }
+function insightHTML(ins){
+  return ins.slice(0,8).map((i,idx)=>`<div class="insight" style="animation-delay:${(idx*0.05+0.05).toFixed(2)}s">
+    <div class="i-dot ${i.dotCls}">${i.arrow}</div>
+    <div class="i-body"><span class="i-priority ${i.cls}">${i.pri}</span><div class="i-txt">${i.txt}</div></div>
+  </div>`).join('');
+}
 
-      // Filter rows by quarter, year, lead source, and date range
-      let rows=allRows;
-      const qMatch=period.match(/^Q(\d)$/i);
-      if(qMatch){
-        const qn=qMatch[1];
-        rows=rows.filter(r=>{
-          const qs=['Schedule (Q)','Happened (Q)','Pipe (Q)','Close (Q)'];
-          return qs.some(c=>String(r[c]||'').includes(qn));
-        });
-      }
-      const goalYear=String(g[GOAL_COL_YEAR]||'').trim();
-      if(goalYear) rows=rows.filter(r=>String(r['Schedule (Y)']||'').trim()===goalYear);
-      const lgAll=!lgFilter||lgFilter.toLowerCase()==='all';
-      if(!lgAll) rows=rows.filter(r=>String(r[LEADGEN_COL]||'').trim().toLowerCase()===lgFilter.toLowerCase());
-      rows=applyDateRange(rows,useStart,useEnd);
-
-      const m=metrics(rows);
-      const resolved=resolveMetric(metricLbl);
-
-      // Compute actual and display format based on resolved type
-      let actual=null, displayActual='—', displayTarget='—', fmt='n';
-      if(resolved){
-        if(resolved.type==='ratio'){
-          actual=resolved.compute(m);                   // decimal e.g. 0.64
-          displayActual=Math.round(actual*1000)/10+'%'; // "64%"
-          displayTarget=Math.round(target*1000)/10+'%'; // "65%"
-          fmt='%';
-        } else if(resolved.type==='colcount'){
-          actual=rows.filter(r=>String(r[resolved.col]||'').trim().toUpperCase()===resolved.val.toUpperCase()).length;
-          displayActual=fmtN(actual);
-          displayTarget=target?fmtN(target):'—';
-        } else {
-          actual=m[resolved.key]??0;
-          fmt=resolved.fmt||'n';
-          const ff=fmt==='$'?fmtD:fmtN;
-          displayActual=ff(actual);
-          displayTarget=target?(fmt==='$'?fmtD(target):fmtN(target)):'—';
-        }
-      }
-
-      // Attainment
-      let pr=0, statusCls='gt-na', statusTxt='No Target', accentColor=C.t2;
-      if(target&&actual!==null){
-        pr=fmt==='%'?Math.min(100,Math.round(actual/target*100)):Math.min(100,pct(actual,target));
-        if(pr>=100){statusCls='gt-on'; statusTxt='On Track'; accentColor=C.green;}
-        else if(pr>=70){statusCls='gt-risk';statusTxt='At Risk'; accentColor=C.orange;}
-        else{statusCls='gt-off'; statusTxt='Behind'; accentColor=C.red;}
-        if(statusCls==='gt-on')onTrack++;
-        else if(statusCls==='gt-risk')atRisk++;
-        else behind++;
-      } else { noTarget++; }
-
-      const periodLabel=period+(goalYear?' '+goalYear:'')+(lgAll?'':' · '+lgFilter);
-      html+=`<div class="gt-card">
-        <div class="gt-card-accent" style="background:${accentColor}"></div>
-        <div class="gt-period">${periodLabel}</div>
-        <div class="gt-name">${name}</div>
-        <div class="gt-metric">${metricLbl||'—'}</div>
-        <div class="gt-nums">
-          <div class="gt-num">
-            <div class="gt-num-val" style="color:${accentColor}">${displayActual}</div>
-            <div class="gt-num-lbl">Actual</div>
-          </div>
-          <div class="gt-num">
-            <div class="gt-num-val">${displayTarget}</div>
-            <div class="gt-num-lbl">Target</div>
-          </div>
-          <div class="gt-num">
-            <div class="gt-num-val" style="color:${accentColor}">${target&&actual!==null?pr+'%':'—'}</div>
-            <div class="gt-num-lbl">Attained</div>
-          </div>
-        </div>
-        ${target&&actual!==null?`<div class="gt-bar-wrap"><div class="gt-bar" style="width:${pr}%;background:${accentColor}"></div></div>`:'<div style="height:14px"></div>'}
-        <div class="gt-status">
-          <span class="gt-badge ${statusCls}">${statusTxt}</span>
-          ${target&&actual!==null?`<span class="gt-pct" style="color:${accentColor}">${fmt==='$'?fmtD(actual):fmt==='%'?(Math.round(actual*1000)/10)+'%':fmtN(actual)} / ${fmt==='$'?fmtD(target):fmt==='%'?(Math.round(target*1000)/10)+'%':fmtN(target)}</span>`:''}
-        </div>
-      </div>`;
-    });
-    html+='</div>';
-  });
-
-  el.innerHTML=html;
-
-  // Summary bar
-  const total=onTrack+atRisk+behind+noTarget;
-  sumEl.innerHTML=`
-    <div class="gt-summary-stat"><div class="gt-summary-val" style="color:var(--green)">${onTrack}</div><div class="gt-summary-lbl">On Track</div></div>
-    <div class="gt-summary-stat"><div class="gt-summary-val" style="color:var(--orange)">${atRisk}</div><div class="gt-summary-lbl">At Risk</div></div>
-    <div class="gt-summary-stat"><div class="gt-summary-val" style="color:var(--red)">${behind}</div><div class="gt-summary-lbl">Behind</div></div>
-    <div class="gt-summary-stat"><div class="gt-summary-val" style="color:var(--t2)">${total}</div><div class="gt-summary-lbl">Total Goals</div></div>`;
+function renderInsights(){
+  const el=document.getElementById('insightList');
+  if(!filteredRows.length){ el.innerHTML=`<div class="no-data-note">Sync your Excel data to generate insights.</div>`; return; }
+  el.innerHTML=insightHTML(buildInsights(filteredRows,''));
 }
 
 // ─── GOALS v4 ────────────────────────────────────
